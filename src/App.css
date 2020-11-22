@@ -1,0 +1,41 @@
+.select-container {
+  margin: 1em 0;
+}
+
+.form-container {
+  margin: 1em 0;
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.poke-card {
+  list-style-type: none;
+  margin-bottom: 2rem;
+  transition: all 0.3s;
+}
+
+.poke-card:hover {
+  transform: scale(1.2);
+}
+
+@media only screen and (max-width: 768px) {
+  .list {
+    justify-content: center;
+  }
+  .poke-card {
+    width: 100%;
+  }
+
+  .poke-card img {
+    width: 100%;
+  }
+  .poke-card:hover {
+    transform: scale(1);
+  }
+}

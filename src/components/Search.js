@@ -1,75 +1,138 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
 
-export default function Search() {
-  const [name, setName] = useState("");
-  const [cards, setCards] = useState([]);
-  const [loading, setLoading] = useState(true);
+const options = [
+  {
+    id: 1,
+    label: "Base",
+    value: "base1",
+  },
+  {
+    id: 2,
+    label: "Jungle",
+    value: "base2",
+  },
+  {
+    id: 3,
+    label: "Fossil",
+    value: "base3",
+  },
+  {
+    id: 4,
+    label: "Base Set 2",
+    value: "base4",
+  },
+  {
+    id: 5,
+    label: "Team Rocket",
+    value: "base5",
+  },
+  {
+    id: 6,
+    label: "Gym Heroes",
+    value: "gym1",
+  },
+  {
+    id: 7,
+    label: "Gem Challenge",
+    value: "gym2",
+  },
+];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch(
-      `https://api.pokemontcg.io/v1/cards?name=${name}`
-    );
-    const data = await response.json();
-    setCards(data);
-    setLoading(false);
-  };
+export default class Search extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      cards: [],
+      name: "",
+      setCode: "base1",
+      isLoaded: false,
+    };
 
-  function handleChange(e) {
-    setName(e.target.value);
+    this.fetchData = this.fetchData.bind(this);
+    this.handleOptionChange = this.handleOptionChange.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  //   useEffect(() => {
-  //     // let container = $("#display-container");
+  fetchData = () => {
+    fetch(
+      `https://api.pokemontcg.io/v1/cards?setCode=${this.state.setCode}&name=${this.state.name}`
+    )
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          cards: json.cards,
+          isLoaded: true,
+        });
+        console.log(json);
+      });
+  };
 
-  //     // if (cards.length > 0) {
-  //     //   container.html(cards.cards[0].name);
-  //     // }
-  //     let container = document.getElementById("display-container");
-  //     let html = cards.map(card => {
-  //         <div>
+  handleSearchChange = (e) => {
+    this.setState({
+      name: e.target.value,
+    });
+  };
 
-  //         </div>
-  //     });
-  //   }, []);
+  handleOptionChange = (e) => {
+    this.setState({
+      setCode: e.target.value,
+    });
+  };
 
-  // if the state changed render that particular component
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.fetchData();
+  };
 
-  return (
-    <div>
-      <form className="form-inline my-2 my-lg-0">
-        <input
-          className="form-control mr-sm-2"
-          type="search"
-          placeholder="Search for Pokemon"
-          aria-label="Search"
-          onChange={handleChange}
-          value={name}
-        />
-        <button
-          onClick={handleSubmit}
-          className="btn btn-outline-success my-2 my-sm-0"
-          type="submit"
-        >
-          Search
-        </button>
-      </form>
-
-      <div id="display-container">
-        {/* {cards.length > 0 && (
-          <ul className="results">
-            {cards.map((card) => (
-              <li key={card.id}>Hi</li>
+  render() {
+    return (
+      <div className="container">
+        <div className="select-container">
+          <select
+            className="form-control select-item"
+            value={this.state.setCode}
+            onChange={this.handleOptionChange.bind(this)}
+          >
+            {options.map((option) => (
+              <option key={option.id} value={option.value}>
+                {option.label}
+              </option>
             ))}
-          </ul>
-        )} */}
-        {/* {loading ? <div>Loading</div> : <img src={cards.cards[0].imageUrl} />} */}
-        {loading ? (
-          <div>Loading</div>
-        ) : (
-          <ul className="results">{console.log(cards)}</ul>
-        )}
+          </select>
+        </div>
+        <form className="form-inline my-lg-0 form-container">
+          <input
+            className="form-control mr-sm-2 col-9"
+            type="search"
+            placeholder="Search for Pokemon"
+            aria-label="Search"
+            onChange={this.handleSearchChange}
+            value={this.state.name}
+          />
+          <button
+            onClick={this.handleSubmit}
+            className="btn btn-outline-success my-2 my-sm-0 col"
+            type="submit"
+          >
+            Search
+          </button>
+        </form>
+
+        <div id="display-container">
+          {!this.state.isLoaded ? (
+            ""
+          ) : (
+            <ul className="list">
+              {this.state.cards.map((card) => (
+                <li className="poke-card" key={card.id}>
+                  <img src={card.imageUrl} alt={card.name} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
