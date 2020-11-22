@@ -1,42 +1,5 @@
 import React, { Component } from "react";
-
-const options = [
-  {
-    id: 1,
-    label: "Base",
-    value: "base1",
-  },
-  {
-    id: 2,
-    label: "Jungle",
-    value: "base2",
-  },
-  {
-    id: 3,
-    label: "Fossil",
-    value: "base3",
-  },
-  {
-    id: 4,
-    label: "Base Set 2",
-    value: "base4",
-  },
-  {
-    id: 5,
-    label: "Team Rocket",
-    value: "base5",
-  },
-  {
-    id: 6,
-    label: "Gym Heroes",
-    value: "gym1",
-  },
-  {
-    id: 7,
-    label: "Gem Challenge",
-    value: "gym2",
-  },
-];
+import { options } from "./inputOptions";
 
 export default class Search extends Component {
   constructor(props) {
@@ -44,7 +7,7 @@ export default class Search extends Component {
     this.state = {
       cards: [],
       name: "",
-      setCode: "base1",
+      setCode: "",
       isLoaded: false,
     };
 
@@ -118,7 +81,6 @@ export default class Search extends Component {
             Search
           </button>
         </form>
-
         <div id="display-container">
           {!this.state.isLoaded ? (
             ""
