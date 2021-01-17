@@ -1,10 +1,8 @@
-import React from "react";
-
 export const options = [
   {
     id: 0,
     label: "All",
-    value: "",
+    value: "base1|base2|base3|base4|base5|gym1|gym2",
   },
   {
     id: 1,
