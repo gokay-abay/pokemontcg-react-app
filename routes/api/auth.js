@@ -34,15 +34,15 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ errors: [{ msg: "invalid credentials" }] })
     }
 
-    // const isMatch = await bcrypt.compare(password, user.password)
+    const isMatch = await bcrypt.compare(password, user.password)
 
-    // if (!isMatch) {
-    //   return res.status(400).json({ errors: [{ msg: "no credentials" }] })
-    // }
-
-    if (password !== user.password) {
-      return res.status(400).json({ errors: [{ msg: "invalid credentials" }] })
+    if (!isMatch) {
+      return res.status(400).json({ errors: [{ msg: "no credentials" }] })
     }
+
+    // if (password !== user.password) {
+    //   return res.status(400).json({ errors: [{ msg: "invalid credentials" }] })
+    // }
 
     // return json webtoken
     const payload = {

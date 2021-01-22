@@ -77,6 +77,7 @@ app.get("/getUser", (req, res) => {
 
 app.use("/api/auth", require("./routes/api/auth"))
 app.use("/api/users", require("./routes/api/users"))
+app.use("/api/decks", require("./routes/api/decks"))
 
 // import the Search class and the fetch api method
 // port
