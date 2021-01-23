@@ -57,7 +57,7 @@ const user = new User({
 // }
 
 // insert a card to the database
-app.get("/addCard", (req, res) => {
+app.get("/addCardToDeck", (req, res) => {
   Deck.findOneAndUpdate(
     { name: "Electric" },
     { $push: { cards: pikachuCard } },

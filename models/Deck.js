@@ -18,7 +18,7 @@ const DeckSchema = new mongoose.Schema({
 
   // array of string objects
   // cards is just the name of the field
-  cards: [String],
+  cards: [],
 })
 
 module.exports = Deck = mongoose.model("deck", DeckSchema)
