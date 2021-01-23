@@ -2,9 +2,9 @@ import React, { Fragment, useState } from "react"
 import { Link, Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
-//import { login } from "../../actions/auth"
+import { login } from "../../actions/auth"
 
-const Login = () => {
+const Login = ({ login, isAuthenticated }) => {
   // store the state that's returned from the reducer
 
   const [formData, setFormData] = useState({
@@ -19,24 +19,32 @@ const Login = () => {
   }
 
   const onSubmit = async (e) => {
-    e.preventdefault()
+    e.preventDefault()
+    login(email, password)
     // fire the login action from the actions
+  }
+
+  // Redirect to User to Deck Dashboard whatever
+  if (isAuthenticated) {
+    return <Redirect to="/dashboard" />
   }
 
   return (
     <Fragment>
       <div className="container">
         <h1>Login</h1>
-        <form>
+        <form onSubmit={onSubmit}>
           <div className="form-group">
             <label for="exampleInputEmail1">Email address</label>
             <input
               type="email"
               className="form-control"
               id="exampleInputEmail1"
+              name="email"
               aria-describedby="emailHelp"
               placeholder="Enter email"
-              onChange={onChange}
+              onChange={(e) => onChange(e)}
+              value={email}
             />
           </div>
           <div className="form-group">
@@ -45,17 +53,25 @@ const Login = () => {
               type="password"
               className="form-control"
               id="exampleInputPassword1"
+              name="password"
               placeholder="Password"
-              onChange={onChange}
+              onChange={(e) => onChange(e)}
+              value={password}
             />
           </div>
-          <button type="submit" className="btn btn-primary" onSubmit={onSubmit}>
-            Submit
-          </button>
+          <input type="submit" className="btn btn-primary" value="Login" />
         </form>
       </div>
     </Fragment>
   )
 }
 
-export default Login
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+}
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+})
+
+export default connect(mapStateToProps, { login })(Login)

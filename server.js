@@ -4,13 +4,15 @@ const User = require("./models/User")
 const Deck = require("./models/Deck")
 const { default: axios } = require("axios")
 const { db } = require("./models/User")
-// import {Search} from ("./client/src/components/Search")
+const cors = require("cors")
 
 const app = express()
 
 // Connect Database
 connectDB()
 
+// cors middleware
+app.use(cors())
 // Init Middleware
 app.use(express.json({ extended: false }))
 
