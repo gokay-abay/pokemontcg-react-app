@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 import "./App.css"
 import Search from "./components/Search"
+import Decks from "./components/Decks"
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import Login from "./components/auth/Login"
 import Register from "./components/auth/Register"
@@ -28,6 +29,7 @@ const App = () => {
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/search" component={Search} />
+            <Route exact path="/decks" component={Decks} />
           </Switch>
         </Router>
       </div>

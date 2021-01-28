@@ -26,7 +26,7 @@ const Login = ({ login, isAuthenticated }) => {
 
   // Redirect to User to Deck Dashboard whatever
   if (isAuthenticated) {
-    return <Redirect to="/dashboard" />
+    return <Redirect to="/decks" />
   }
 
   return (
