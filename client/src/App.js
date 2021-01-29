@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import "./App.css"
 import Search from "./components/Search"
 import Decks from "./components/Decks"
+import CustomizeDeck from "./components/CustomizeDeck"
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import Login from "./components/auth/Login"
 import Register from "./components/auth/Register"
@@ -30,6 +31,7 @@ const App = () => {
             <Route exact path="/register" component={Register} />
             <Route exact path="/search" component={Search} />
             <Route exact path="/decks" component={Decks} />
+            <Route exact path="/customize" component={CustomizeDeck} />
           </Switch>
         </Router>
       </div>

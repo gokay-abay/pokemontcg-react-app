@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { Link, Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import { getAllDecks, getDeck } from "../actions/deck"
@@ -49,7 +50,7 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
       {!loading &&
         decks.map((deck) => {
           return (
-            <div className="container row">
+            <div className="container row" key={deck._id}>
               <div className="card-back">
                 <img
                   src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4f7705ec-8c49-4eed-a56e-c21f3985254c/dah43cy-a8e121cb-934a-40f6-97c7-fa2d77130dd5.png/v1/fill/w_1024,h_1420,strp/pokemon_card_backside_in_high_resolution_by_atomicmonkeytcg_dah43cy-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD0xNDIwIiwicGF0aCI6IlwvZlwvNGY3NzA1ZWMtOGM0OS00ZWVkLWE1NmUtYzIxZjM5ODUyNTRjXC9kYWg0M2N5LWE4ZTEyMWNiLTkzNGEtNDBmNi05N2M3LWZhMmQ3NzEzMGRkNS5wbmciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.6Au-hxTt7FuZ5paCMWMJrAiCi-ClaG35bEG2TgGg0VE"
@@ -61,14 +62,16 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
                 <h2>{deck.name}</h2>
               </div>
               <div className="col btn-div">
-                <button
-                  value={deck._id}
-                  onClick={(e) => {
-                    onClick(e)
-                  }}
-                >
-                  Customize
-                </button>
+                <Link to={`/customize`}>
+                  <button
+                    value={deck._id}
+                    onClick={(e) => {
+                      onClick(e)
+                    }}
+                  >
+                    Customize
+                  </button>
+                </Link>
                 <button
                   value={deck._id}
                   onClick={(e) => {
