@@ -1,8 +1,9 @@
-import { GET_DECKS } from "../actions/types"
+import { GET_DECKS, GET_ONE_DECK } from "../actions/types"
 
 const initialState = {
   loading: true,
   decks: null,
+  deck: null,
 }
 
 export default function (state = initialState, action) {
@@ -14,6 +15,13 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
         decks: payload,
+      }
+
+    case GET_ONE_DECK:
+      return {
+        ...state,
+        loading: false,
+        deck: payload,
       }
     default:
       return state

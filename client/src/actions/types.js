@@ -6,3 +6,4 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS"
 export const LOGIN_FAIL = "LOGIN_FAIL"
 
 export const GET_DECKS = "GET_DECKS"
+export const GET_ONE_DECK = "GET_ONE_DECK"
