@@ -52,6 +52,7 @@ const SearchCards = (props) => {
         .then((res) => console.log(res))
         .catch((err) => console.log(err))
     }
+    props.getDeck(props.deckId)
   }
 
   return (
@@ -119,6 +120,8 @@ const SearchCards = (props) => {
   )
 }
 
-SearchCards.propTypes = {}
+SearchCards.propTypes = {
+  getDeck: PropTypes.func.isRequired,
+}
 
-export default SearchCards
+export default connect(null, { getDeck })(SearchCards)

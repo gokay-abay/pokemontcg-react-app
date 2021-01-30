@@ -129,7 +129,7 @@ router.put("/removecard/:id", auth, async (req, res) => {
       return res.status(404).json({ msg: "Deck not found" })
     }
 
-    const name = req.body.name
+    // const name = req.body.name
     //console.log(deck.cards)
 
     // Deck.findByIdAndUpdate(
@@ -145,15 +145,24 @@ router.put("/removecard/:id", auth, async (req, res) => {
     // deck.cards.filter((card) => {
     //   card === req.body.name
     // })
+    // found.cards.forEach((card, index) => {
+    //     if (card.id === req.body.id) {
+    //       const spliced = found.cards.splice(index, 1)
+    //       console.log("delete request run")
+    //       return
+    //     }
+    //   }
 
-    deck.cards.forEach((card, index) => {
-      if (card === req.body.name) {
-        const spliced = deck.cards.splice(index, 1)
+    const id = req.body.id
+
+    for (let i = 0; i < deck.cards.length; i++) {
+      if (deck.cards[i].id === id) {
+        const spliced = deck.cards.splice(i, 1)
         deck.save()
-        return res.json(deck.cards)
+        return res.status(200).json(spliced)
       }
-    })
-    return res.json(decks.cards)
+    }
+    return res.json(deck.cards)
   } catch (err) {
     console.error(err.message)
     return res.status(500).send("Server Error")
