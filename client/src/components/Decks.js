@@ -45,7 +45,7 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h1>Decks Dashboard</h1>
       {!loading &&
         decks.map((deck) => {
@@ -59,7 +59,7 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
                 />
               </div>
               <div className="deck-name">
-                <h2>{deck.name}</h2>
+                <h3>{deck.name}</h3>
               </div>
               <div className="col btn-div">
                 <Link to={`/customize`}>
@@ -92,9 +92,10 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
           name="deckName"
           value={deckName}
           onChange={(e) => onChange(e)}
+          placeholder="New Deck Name.."
           required
         />
-        <input type="submit" value="Create" />
+        <input type="submit" value="Create New Deck" />
       </form>
     </div>
   )

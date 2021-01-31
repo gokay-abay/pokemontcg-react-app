@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { connect } from "react-redux"
-import { getDeck } from "../actions/deck"
+import { getDeck, addCardToDeck } from "../actions/deck"
 import axios from "axios"
 import PropTypes from "prop-types"
 import { options } from "./inputOptions"
@@ -43,17 +43,18 @@ const SearchCards = (props) => {
   }
 
   // make a post request to current deck to add the card
-  const addCardToDeck = async (card, qty) => {
-    for (let i = 0; i < qty; i++) {
-      await axios
-        .put(`http://localhost:4000/api/decks/addcard/${props.deckId}`, {
-          card: card,
-        })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
-    }
-    props.getDeck(props.deckId)
-  }
+  //const addCardToDeck = (card, qty) => {
+  // for (let i = 0; i < qty; i++) {
+  //   await axios
+  //     .put(`http://localhost:4000/api/decks/addcard/${props.deckId}`, {
+  //       card: card,
+  //     })
+  //     .then((res) => console.log(res))
+  //     .catch((err) => console.log(err))
+  // }
+  // props.getDeck(props.deckId)
+
+  //}
 
   return (
     <div className="container">
@@ -105,7 +106,7 @@ const SearchCards = (props) => {
                   <button
                     className="btn-primary"
                     onClick={() => {
-                      addCardToDeck(card, qty)
+                      props.addCardToDeck(card, qty)
                     }}
                   >
                     Add Card
@@ -122,6 +123,7 @@ const SearchCards = (props) => {
 
 SearchCards.propTypes = {
   getDeck: PropTypes.func.isRequired,
+  addCardToDeck: PropTypes.func.isRequired,
 }
 
-export default connect(null, { getDeck })(SearchCards)
+export default connect(null, { getDeck, addCardToDeck })(SearchCards)

@@ -88,6 +88,32 @@ router.post(
 )
 
 // @route   PUT api/decks/:id
+// @desc    Update deck with new cards
+// @access  Private
+
+router.put("/:id", auth, async (req, res) => {
+  try {
+    const deck = await Deck.findById(req.params.id)
+
+    if (!deck) {
+      return res.status(404).json({ msg: "Deck not found" })
+    }
+
+    const cards = req.body.cards
+
+    if (cards == null) {
+      return res.status(404).json({ msg: "Can not add null values" })
+    }
+
+    deck.cards = cards
+    await deck.save()
+    return res.json(deck)
+  } catch (err) {
+    res.status(500).send("Server Error")
+  }
+})
+
+// @route   PUT api/decks/:id
 // @desc    Add a card to deck
 // @access  Private
 router.put("/addcard/:id", auth, async (req, res) => {

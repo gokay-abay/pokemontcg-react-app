@@ -1,49 +1,68 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { connect } from "react-redux"
-import { getDeck } from "../actions/deck"
+import { getDeck, addCardToDeck } from "../actions/deck"
 import axios from "axios"
 import PropTypes from "prop-types"
-import { options } from "./inputOptions"
 import e from "cors"
 import SearchCards from "./SearchCards"
 
-const CustomizeDeck = ({ getDeck, deck, loading }) => {
-  const [deckName, setDeckName] = useState("")
-  const [deckCards, setDeckCards] = useState([])
-  const [deckId, setDeckId] = useState("")
+const CustomizeDeck = ({
+  getDeck,
+  addCardToDeck,
+  addedCards,
+  deck,
+  loading,
+}) => {
+  const [localDeck, setLocalDeck] = useState({
+    cards: [],
+    name: "",
+    id: "",
+  })
+  const [localAddedCards, setLocalAddedCards] = useState(addedCards)
   const [cardCount, setCardCount] = useState(1)
-  const [success, setSuccess] = useState("")
-  const [deleteLoaded, setDeleteLoaded] = useState(false)
-  //   const [selectedCard, setSelectedCard] = useState({})
 
   // can store the id in the redux action and then make a call inside the component
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDeckName(deck.name)
-      setDeckCards(deck.cards)
-      setDeckId(deck._id)
+      setLocalDeck({
+        cards: deck.cards,
+        name: deck.name,
+        id: deck._id,
+      })
     }, 500)
     return () => clearTimeout(timer)
   }, [deck])
 
-  let cardIds = []
-  deckCards.forEach((card) => {
-    cardIds.push(card.id)
-  })
+  //  when the addedCards get updated run this useEffect
+  // The avoid the first execution of deck update we need to check if the addedCards has a value.
+  // if it doesn't have a value it means add to card is not clicked. don't do anything
+  // if it does have a value it might be a new or an old value.
+  // store every value locally to see if the value is new or not
+
+  useEffect(() => {
+    // if addedCards is not null run this piece of logic
+    if (addedCards !== null && addedCards !== localAddedCards) {
+      setLocalAddedCards(addedCards)
+      setLocalDeck((prevState) => {
+        return {
+          ...prevState,
+          cards: [...addedCards, ...prevState.cards],
+        }
+      })
+    }
+  }, [addedCards])
+
+  // I have two cards to add to the local deck. When should I run the function that add these to the deck. When add button is clicked I can fire some bool to do that
 
   // array that keeps count of unique id occurences
-  let counts = {}
-  cardIds.forEach((id) => (counts[id] = (counts[id] || 0) + 1))
-  console.log(counts)
 
   // array taht contains uniqueIds
-  let unique = cardIds.filter((item, i, ar) => ar.indexOf(item) === i)
-  console.log(unique)
+  //let unique = cardIds.filter((item, i, ar) => ar.indexOf(item) === i)
 
   // maps the unique objects in an array to a new array
   const result = []
   const map = new Map()
-  for (const item of deckCards) {
+  for (const item of localDeck.cards) {
     if (!map.has(item.id)) {
       map.set(item.id, true)
       result.push(item)
@@ -52,44 +71,75 @@ const CustomizeDeck = ({ getDeck, deck, loading }) => {
 
   // function that takes in the card to get the count from the counts dictionary of that particular card
   const getCardCount = (card) => {
+    let cardIds = []
+    let counts = {}
+    localDeck.cards.forEach((card) => cardIds.push(card.id))
+    cardIds.forEach((id) => (counts[id] = (counts[id] || 0) + 1))
     return counts[card.id]
   }
 
   // remove existing cards from deck
-  const removeCardfromDeck = async (card) => {
+  const removeCardfromDeck = (card) => {
+    let splicedCards = localDeck.cards
+    for (let i = 0; i < localDeck.cards.length; i++) {
+      if (localDeck.cards[i].id === card.id) {
+        splicedCards.splice(i, 1)
+        setLocalDeck((prevState) => {
+          return {
+            ...prevState,
+            cards: splicedCards,
+          }
+        })
+        console.log(deck)
+        return
+      }
+    }
+  }
+
+  // Save the localDeck to database
+  const onSubmit = async (e) => {
+    e.preventDefault()
     await axios
-      .put(`http://localhost:4000/api/decks/removecard/${deckId}`, {
-        id: card.id,
+      .put(`http://localhost:4000/api/decks/${localDeck.id}`, {
+        cards: localDeck.cards,
       })
-      .then(() => getDeck(deckId))
+      .then((res) => console.log(res))
       .catch((err) => console.log(err))
   }
 
-  console.log(deckCards)
-  console.log(deck)
+  // Reset Changes
+  const resetChanges = () => {
+    getDeck(localDeck.id)
+  }
+
+  const { cards, name, id } = localDeck
 
   return (
     <div className="container row">
       <div className="deck-info-card-list col-sm-6">
         <div className="deck-info">
           <h1></h1>
-          <p>{deckName}</p>
-          <p>{deckCards.length}</p>
+          <p>{name}</p>
+          <p>{cards.length}</p>
         </div>
+
         <div className="card-list">
+          <form action=""></form>
           <h2>Card list</h2>
           <ul>
-            {deckCards
+            {cards
               ? result.map((card, index) => {
                   return (
                     <li key={index}>
                       {/* {() => setSelectedCard(card)} */}
                       <p>
-                        {card.name} x
-                        {deleteLoaded ? getCardCount(card) : getCardCount(card)}
+                        <span>{card.name}</span> x{getCardCount(card)}
                       </p>
                       <button onClick={() => removeCardfromDeck(card)}>
                         Delete
+                      </button>
+                      <button onClick={() => addCardToDeck(card, 1)}>
+                        Add
                       </button>
                     </li>
                   )
@@ -97,9 +147,13 @@ const CustomizeDeck = ({ getDeck, deck, loading }) => {
               : "Loading"}
           </ul>
         </div>
+        <form onSubmit={onSubmit}>
+          <input type="submit" value="Save Changes" />
+          <input type="button" value="Cancel" onClick={resetChanges} />
+        </form>
       </div>
       <div className="search-card col-sm-6 row">
-        <SearchCards deckId={deckId} />
+        <SearchCards deckId={id} />
       </div>
     </div>
   )
@@ -107,11 +161,15 @@ const CustomizeDeck = ({ getDeck, deck, loading }) => {
 
 CustomizeDeck.propTypes = {
   getDeck: PropTypes.func.isRequired,
+  addCardToDeck: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
   deck: state.deck.deck,
   loading: state.deck.loading,
+  addedCards: state.deck.addedCards,
 })
 
-export default connect(mapStateToProps, { getDeck })(CustomizeDeck)
+export default connect(mapStateToProps, { getDeck, addCardToDeck })(
+  CustomizeDeck
+)
