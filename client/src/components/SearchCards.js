@@ -58,6 +58,7 @@ const SearchCards = (props) => {
 
   return (
     <div className="container">
+      <h1>Search for Cards</h1>
       <div className="select-container">
         <select
           className="form-control select-item"

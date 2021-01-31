@@ -119,13 +119,13 @@ const CustomizeDeck = ({
       <div className="deck-info-card-list col-sm-6">
         <div className="deck-info">
           <h1></h1>
-          <p>{name}</p>
-          <p>{cards.length}</p>
+          <h1>{name}</h1>
+          <p>Number of Cards: {cards.length}</p>
         </div>
 
         <div className="card-list">
           <form action=""></form>
-          <h2>Card list</h2>
+          <h3>Card list</h3>
           <ul>
             {cards
               ? result.map((card, index) => {
