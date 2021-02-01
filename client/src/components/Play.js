@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react"
+import { Link, Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import { getDeck } from "../actions/deck"
 import Draggable from "react-draggable"
 
 import PropTypes from "prop-types"
 
-const Play = ({ deck, getDeck }) => {
+const Play = ({ deck, getDeck, isAuthenticated }) => {
   // ask user to select a deck
   // give them a dropdown with their decks
 
@@ -34,14 +35,12 @@ const Play = ({ deck, getDeck }) => {
   }, [deck])
 
   const shuffle = () => {
-    var shuffledDeck = localDeck.cards
+    let shuffledDeck = localDeck.cards
     if (shuffledDeck.length > 0) {
-      for (var i = 0; i < 1000; i++) {
-        var location1 = Math.floor(Math.random() * shuffledDeck.length)
-        var location2 = Math.floor(Math.random() * shuffledDeck.length)
-
-        var temp = shuffledDeck[location1]
-
+      for (let i = 0; i < 1000; i++) {
+        let location1 = Math.floor(Math.random() * shuffledDeck.length)
+        let location2 = Math.floor(Math.random() * shuffledDeck.length)
+        let temp = shuffledDeck[location1]
         shuffledDeck[location1] = shuffledDeck[location2]
         shuffledDeck[location2] = temp
       }
@@ -54,13 +53,11 @@ const Play = ({ deck, getDeck }) => {
     })
   }
 
+  // draws the top card from the deck
   const draw = () => {
-    // draws the top card from the deck
-    var drawnDeck = localDeck.cards
-
+    let drawnDeck = localDeck.cards
     if (drawnDeck.length > 0) {
-      var drawnCard = drawnDeck.shift()
-
+      let drawnCard = drawnDeck.shift()
       setLocalDeck((prevState) => {
         return {
           ...prevState,
@@ -73,19 +70,24 @@ const Play = ({ deck, getDeck }) => {
 
   const restart = () => {
     setHand([])
+    setZValue(1)
     getDeck(localDeck.id)
   }
 
-  const bringFront = (index) => {
-    // get the element by its id and then increase its z-index by 1
-    let elem = document.getElementById(index)
+  // Brings the card front on click
+  // get the element by its id and then increase its z-index by 1
+  const bringFront = (cardId) => {
+    let elem = document.getElementById(cardId)
     setZValue(zValue + 1)
     elem.style.zIndex = zValue
-    console.log("clicked")
   }
 
   // I need input to ask the user which deck they want
   // get the deck. feed it into the functions.
+
+  if (!isAuthenticated) {
+    return <Redirect to="/" />
+  }
 
   return (
     <div className="playmat">
@@ -124,7 +126,6 @@ const Play = ({ deck, getDeck }) => {
                 key={index}
                 id={index}
                 onClick={() => bringFront(index)}
-                value={index}
               >
                 <img
                   src={card.imageUrl}
@@ -147,6 +148,7 @@ Play.propTypes = {
 
 const mapStateToProps = (state) => ({
   deck: state.deck.deck,
+  isAuthenticated: state.auth.isAuthenticated,
 })
 
 export default connect(mapStateToProps, { getDeck })(Play)

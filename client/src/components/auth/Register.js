@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import axios from "axios"
 import { register } from "../../actions/auth"
 import PropTypes from "prop-types"
+import { getAllDecks } from "../../actions/deck"
 
 const Register = ({ register, isAuthenticated }) => {
   const [formData, setFormData] = useState({
@@ -48,7 +49,7 @@ const Register = ({ register, isAuthenticated }) => {
   }
 
   if (isAuthenticated) {
-    return <Redirect to="/dashboard" />
+    return <Redirect to="/decks" />
   }
 
   return (

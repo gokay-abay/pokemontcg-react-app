@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import "./App.css"
+import Navbar from "./components/Navbar"
 import Search from "./components/Search"
 import Decks from "./components/Decks"
 import Play from "./components/Play"
@@ -13,6 +14,7 @@ import { Provider } from "react-redux"
 import store from "./store"
 import { loadUser } from "./actions/auth"
 
+// verify token
 if (localStorage.token) {
   setAuthToken(localStorage.token)
 }
@@ -26,6 +28,7 @@ const App = () => {
     <Provider store={store}>
       <div className="App">
         <Router>
+          <Navbar />
           <Route exact path="/" component={Login} />
           <Switch>
             <Route exact path="/play" component={Play} />

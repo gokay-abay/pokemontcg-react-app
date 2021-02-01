@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { Link, Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import { getDeck, addCardToDeck } from "../actions/deck"
 import axios from "axios"
@@ -11,7 +12,8 @@ const CustomizeDeck = ({
   addCardToDeck,
   addedCards,
   deck,
-  loading,
+  deckLoading,
+  auth: { isAuthenticated, loading },
 }) => {
   const [localDeck, setLocalDeck] = useState({
     cards: [],
@@ -112,6 +114,10 @@ const CustomizeDeck = ({
     getDeck(localDeck.id)
   }
 
+  if (!isAuthenticated) {
+    return <Redirect to="/" />
+  }
+
   const { cards, name, id } = localDeck
 
   return (
@@ -168,6 +174,7 @@ const mapStateToProps = (state) => ({
   deck: state.deck.deck,
   loading: state.deck.loading,
   addedCards: state.deck.addedCards,
+  auth: state.auth,
 })
 
 export default connect(mapStateToProps, { getDeck, addCardToDeck })(

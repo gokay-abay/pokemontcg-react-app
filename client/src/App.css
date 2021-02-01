@@ -1,9 +1,68 @@
+/* ================== 
+NAVBAR
+=================== */
+
+#navbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2b70aa;
+  padding: 0.5em 2em;
+}
+
+#navbar h1 a {
+  color: #f6c406;
+}
+
+#navbar h1 {
+  margin-bottom: 0;
+}
+
+.navbar-list {
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar-item {
+  text-decoration: none;
+  list-style: none;
+  margin-left: 2em;
+}
+
+.navbar-item a {
+  color: #f6c406;
+}
+
+/* ================== 
+MY DECKS
+=================== */
+
+.deck-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.btn-div button {
+  margin-left: 2em;
+}
+
+.form-div .form-control {
+  margin-right: 2em;
+}
+
 .select-container {
   margin: 1em 0;
 }
 
 .form-container {
   margin: 1em 0;
+}
+
+.form-div form {
+  display: flex;
 }
 
 .list {

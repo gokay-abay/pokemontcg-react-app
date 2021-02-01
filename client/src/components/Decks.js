@@ -6,14 +6,25 @@ import { getAllDecks, getDeck } from "../actions/deck"
 import axios from "axios"
 import e from "cors"
 
-const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
+const Decks = ({
+  getAllDecks,
+  getDeck,
+  decks,
+  deckLoading,
+  auth: { isAuthenticated, loading },
+}) => {
   const [deckName, setDeckName] = useState("")
   // get all the decks that belong to the user
   // create an action that fetches all the decks. Call that action upon this component is rendered.
   // We want Decks data as a state. once have the data store it in a local array and map the contents
+
   useEffect(() => {
     getAllDecks()
   }, [])
+
+  // if (!isAuthenticated) {
+  //   return <Redirect to="/register" />
+  // }
 
   const onChange = (e) => {
     setDeckName(e.target.value)
@@ -44,13 +55,17 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
     getDeck(id)
   }
 
+  if (!isAuthenticated) {
+    return <Redirect to="/" />
+  }
+
   return (
     <div className="container">
       <h1>Decks Dashboard</h1>
-      {!loading &&
+      {!deckLoading &&
         decks.map((deck) => {
           return (
-            <div className="container row" key={deck._id}>
+            <div className="deck-card " key={deck._id}>
               <div className="card-back">
                 <img
                   src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4f7705ec-8c49-4eed-a56e-c21f3985254c/dah43cy-a8e121cb-934a-40f6-97c7-fa2d77130dd5.png/v1/fill/w_1024,h_1420,strp/pokemon_card_backside_in_high_resolution_by_atomicmonkeytcg_dah43cy-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD0xNDIwIiwicGF0aCI6IlwvZlwvNGY3NzA1ZWMtOGM0OS00ZWVkLWE1NmUtYzIxZjM5ODUyNTRjXC9kYWg0M2N5LWE4ZTEyMWNiLTkzNGEtNDBmNi05N2M3LWZhMmQ3NzEzMGRkNS5wbmciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.6Au-hxTt7FuZ5paCMWMJrAiCi-ClaG35bEG2TgGg0VE"
@@ -61,9 +76,10 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
               <div className="deck-name">
                 <h3>{deck.name}</h3>
               </div>
-              <div className="col btn-div">
+              <div className="btn-div">
                 <Link to={`/customize/${deck._id}`}>
                   <button
+                    className="btn btn-warning"
                     value={deck._id}
                     onClick={(e) => {
                       onClick(e)
@@ -73,6 +89,7 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
                   </button>
                 </Link>
                 <button
+                  className="btn btn-danger"
                   value={deck._id}
                   onClick={(e) => {
                     deleteDeck(e)
@@ -85,18 +102,24 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
           )
         })}
 
-      <form onSubmit={onSubmit}>
-        <input
-          className="form-control"
-          type="text"
-          name="deckName"
-          value={deckName}
-          onChange={(e) => onChange(e)}
-          placeholder="New Deck Name.."
-          required
-        />
-        <input type="submit" value="Create New Deck" />
-      </form>
+      <div className="form-div">
+        <form onSubmit={onSubmit}>
+          <input
+            className="form-control"
+            type="text"
+            name="deckName"
+            value={deckName}
+            onChange={(e) => onChange(e)}
+            placeholder="New Deck Name.."
+            required
+          />
+          <input
+            className="btn btn-primary"
+            type="submit"
+            value="Create New Deck"
+          />
+        </form>
+      </div>
     </div>
   )
 }
@@ -108,7 +131,8 @@ Decks.propTypes = {
 
 const mapStateToProps = (state) => ({
   decks: state.deck.decks,
-  loading: state.deck.loading,
+  deckLoading: state.deck.deckLoading,
+  auth: state.auth,
 })
 
 export default connect(mapStateToProps, { getAllDecks, getDeck })(Decks)

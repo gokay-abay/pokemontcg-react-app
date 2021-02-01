@@ -18,14 +18,6 @@ app.use(express.json({ extended: false }))
 
 // Define routes
 
-const user = new User({
-  name: "Gokay Abay",
-  email: "test@email.com",
-  password: "123456",
-})
-
-// user.save()
-
 // var pikachuCard = ""
 // axios
 //   .get("https://api.pokemontcg.io/v1/cards?setCode=base1&name=pikachu")
@@ -59,23 +51,23 @@ const user = new User({
 // }
 
 // insert a card to the database
-app.get("/addCardToDeck", (req, res) => {
-  Deck.findOneAndUpdate(
-    { name: "Electric" },
-    { $push: { cards: pikachuCard } },
-    { useFindAndModify: false },
-    (err, found) => {
-      if (!err) console.log("the card is inserted")
-    }
-  )
-})
+// app.get("/addCardToDeck", (req, res) => {
+//   Deck.findOneAndUpdate(
+//     { name: "Electric" },
+//     { $push: { cards: pikachuCard } },
+//     { useFindAndModify: false },
+//     (err, found) => {
+//       if (!err) console.log("the card is inserted")
+//     }
+//   )
+// })
 
-app.get("/getUser", (req, res) => {
-  // Deck.findById({ user: user._id }, (err, found) => {
-  //   if (!err) console.log(found)
-  //   else console.log(err)
-  // })
-})
+// app.get("/getUser", (req, res) => {
+//   // Deck.findById({ user: user._id }, (err, found) => {
+//   //   if (!err) console.log(found)
+//   //   else console.log(err)
+//   // })
+// })
 
 app.use("/api/auth", require("./routes/api/auth"))
 app.use("/api/users", require("./routes/api/users"))
