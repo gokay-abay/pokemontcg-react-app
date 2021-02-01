@@ -16,12 +16,15 @@
 
 .poke-card {
   list-style-type: none;
-  margin-bottom: 2rem;
-  transition: all 0.3s;
+  position: absolute;
 }
 
-.poke-card:hover {
+/* .poke-card:hover {
   transform: scale(1.2);
+} */
+
+#absolute-image {
+  position: absolute;
 }
 
 @media only screen and (max-width: 768px) {

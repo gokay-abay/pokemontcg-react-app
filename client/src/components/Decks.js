@@ -62,7 +62,7 @@ const Decks = ({ getAllDecks, getDeck, decks, loading }) => {
                 <h3>{deck.name}</h3>
               </div>
               <div className="col btn-div">
-                <Link to={`/customize`}>
+                <Link to={`/customize/${deck._id}`}>
                   <button
                     value={deck._id}
                     onClick={(e) => {

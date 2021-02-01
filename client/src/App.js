@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import "./App.css"
 import Search from "./components/Search"
 import Decks from "./components/Decks"
+import Play from "./components/Play"
 import CustomizeDeck from "./components/CustomizeDeck"
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import Login from "./components/auth/Login"
@@ -27,11 +28,12 @@ const App = () => {
         <Router>
           <Route exact path="/" component={Login} />
           <Switch>
+            <Route exact path="/play" component={Play} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/search" component={Search} />
             <Route exact path="/decks" component={Decks} />
-            <Route exact path="/customize" component={CustomizeDeck} />
+            <Route exact path="/customize/:id" component={CustomizeDeck} />
           </Switch>
         </Router>
       </div>

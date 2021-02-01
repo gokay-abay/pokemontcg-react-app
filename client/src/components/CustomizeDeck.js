@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect } from "react"
 import { connect } from "react-redux"
 import { getDeck, addCardToDeck } from "../actions/deck"
 import axios from "axios"
@@ -19,16 +19,17 @@ const CustomizeDeck = ({
     id: "",
   })
   const [localAddedCards, setLocalAddedCards] = useState(addedCards)
-  const [cardCount, setCardCount] = useState(1)
-
   // can store the id in the redux action and then make a call inside the component
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLocalDeck({
-        cards: deck.cards,
-        name: deck.name,
-        id: deck._id,
-      })
+      if (deck !== null) {
+        setLocalDeck({
+          cards: deck.cards,
+          name: deck.name,
+          id: deck._id,
+        })
+      }
     }, 500)
     return () => clearTimeout(timer)
   }, [deck])
@@ -90,7 +91,6 @@ const CustomizeDeck = ({
             cards: splicedCards,
           }
         })
-        console.log(deck)
         return
       }
     }
