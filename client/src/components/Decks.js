@@ -11,6 +11,7 @@ const Decks = ({
   getDeck,
   decks,
   deckLoading,
+  decksLoading,
   auth: { isAuthenticated, loading },
 }) => {
   const [deckName, setDeckName] = useState("")
@@ -62,7 +63,7 @@ const Decks = ({
   return (
     <div className="container">
       <h1>Decks Dashboard</h1>
-      {!deckLoading &&
+      {!decksLoading &&
         decks.map((deck) => {
           return (
             <div className="deck-card " key={deck._id}>
@@ -77,6 +78,15 @@ const Decks = ({
                 <h3>{deck.name}</h3>
               </div>
               <div className="btn-div">
+                <Link to={"/play"}>
+                  <button
+                    className="btn btn-success"
+                    value={deck._id}
+                    onClick={(e) => onClick(e)}
+                  >
+                    Play
+                  </button>
+                </Link>
                 <Link to={`/customize/${deck._id}`}>
                   <button
                     className="btn btn-warning"
@@ -133,6 +143,7 @@ const mapStateToProps = (state) => ({
   decks: state.deck.decks,
   deckLoading: state.deck.deckLoading,
   auth: state.auth,
+  decksLoading: state.deck.decksLoading,
 })
 
 export default connect(mapStateToProps, { getAllDecks, getDeck })(Decks)

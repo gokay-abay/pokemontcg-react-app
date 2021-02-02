@@ -2,6 +2,7 @@ import { ADD_CARD, GET_DECKS, GET_ONE_DECK } from "../actions/types"
 
 const initialState = {
   deckLoading: true,
+  decksLoading: true,
   decks: null,
   deck: null,
   addedCards: null,
@@ -14,7 +15,7 @@ export default function (state = initialState, action) {
     case GET_DECKS:
       return {
         ...state,
-        deckLoading: false,
+        decksLoading: false,
         decks: payload,
       }
 
