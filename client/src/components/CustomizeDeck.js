@@ -49,11 +49,16 @@ const CustomizeDeck = ({
       setLocalDeck((prevState) => {
         return {
           ...prevState,
-          cards: [...addedCards, ...prevState.cards],
+          cards: [...prevState.cards, ...addedCards],
         }
       })
     }
   }, [addedCards])
+
+  // for the number of added card array run a for loop
+  // find the id and index of the card which is to be incread in number
+  // insert the new card in that index possibly slice method
+  //
 
   // I have two cards to add to the local deck. When should I run the function that add these to the deck. When add button is clicked I can fire some bool to do that
 
@@ -121,7 +126,7 @@ const CustomizeDeck = ({
   const { cards, name, id } = localDeck
 
   return (
-    <div className="container row">
+    <div className="customize-div container">
       <div className="deck-info-card-list col-sm-6">
         <div className="deck-info">
           <h1></h1>
@@ -129,36 +134,52 @@ const CustomizeDeck = ({
           <p>Number of Cards: {cards.length}</p>
         </div>
 
-        <div className="card-list">
-          <form action=""></form>
+        <div className="card-list-div">
           <h3>Card list</h3>
-          <ul>
+          <form id="save-changes-form" onSubmit={onSubmit}>
+            <input
+              className="btn btn-dark"
+              type="button"
+              value="Cancel"
+              onClick={resetChanges}
+            />
+            <input
+              className="btn btn-primary"
+              type="submit"
+              value="Save Changes"
+            />
+          </form>
+          <ul id="card-list">
             {cards
               ? result.map((card, index) => {
                   return (
                     <li key={index}>
-                      {/* {() => setSelectedCard(card)} */}
+                      <img src={card.imageUrl} alt={card.name} width="50px" />
                       <p>
                         <span>{card.name}</span> x{getCardCount(card)}
                       </p>
-                      <button onClick={() => removeCardfromDeck(card)}>
-                        Delete
-                      </button>
-                      <button onClick={() => addCardToDeck(card, 1)}>
-                        Add
-                      </button>
+                      <div className="btn-div">
+                        <button
+                          className="btn btn-success"
+                          onClick={() => addCardToDeck(card, 1)}
+                        >
+                          <i class="fas fa-plus"></i>
+                        </button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => removeCardfromDeck(card)}
+                        >
+                          <i class="fas fa-minus"></i>
+                        </button>
+                      </div>
                     </li>
                   )
                 })
               : "Loading"}
           </ul>
         </div>
-        <form onSubmit={onSubmit}>
-          <input type="submit" value="Save Changes" />
-          <input type="button" value="Cancel" onClick={resetChanges} />
-        </form>
       </div>
-      <div className="search-card col-sm-6 row">
+      <div className="search-card col-sm">
         <SearchCards deckId={id} />
       </div>
     </div>

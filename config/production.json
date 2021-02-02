@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://admin-gokay:GupKO9MDWstTtbyk@cluster0.9lbz6.mongodb.net/poketcgDB?retryWrites=true&w=majority",
+  "jwtSecret": "mysecretkey"
+}

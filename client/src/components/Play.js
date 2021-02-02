@@ -92,6 +92,7 @@ const Play = ({ deck, getDeck, isAuthenticated }) => {
   return (
     <div className="playmat">
       <img
+        id="card-back-img"
         //   style={styles}
         draggable="false"
         // id="absolute-image"

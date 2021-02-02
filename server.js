@@ -5,6 +5,7 @@ const Deck = require("./models/Deck")
 const { default: axios } = require("axios")
 const { db } = require("./models/User")
 const cors = require("cors")
+const path = require("path")
 
 const app = express()
 
@@ -72,6 +73,16 @@ app.use(express.json({ extended: false }))
 app.use("/api/auth", require("./routes/api/auth"))
 app.use("/api/users", require("./routes/api/users"))
 app.use("/api/decks", require("./routes/api/decks"))
+
+// Serve static assets in production
+if (process.env.NODE_ENV === "production") {
+  // Set Static folder
+  app.use(express.static("client/build"))
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+  })
+}
 
 // import the Search class and the fetch api method
 // port

@@ -42,20 +42,6 @@ const SearchCards = (props) => {
     setQty(e.target.value)
   }
 
-  // make a post request to current deck to add the card
-  //const addCardToDeck = (card, qty) => {
-  // for (let i = 0; i < qty; i++) {
-  //   await axios
-  //     .put(`http://localhost:4000/api/decks/addcard/${props.deckId}`, {
-  //       card: card,
-  //     })
-  //     .then((res) => console.log(res))
-  //     .catch((err) => console.log(err))
-  // }
-  // props.getDeck(props.deckId)
-
-  //}
-
   return (
     <div className="container">
       <h1>Search for Cards</h1>
@@ -94,7 +80,7 @@ const SearchCards = (props) => {
               <li className="poke-card" key={index}>
                 <img src={card.imageUrl} alt={card.name} width="100px" />
                 <div>
-                  <label for="qty">Quantity:</label>
+                  <label for="qty"></label>
                   <input
                     type="number"
                     name="qty"
@@ -110,7 +96,7 @@ const SearchCards = (props) => {
                       props.addCardToDeck(card, qty)
                     }}
                   >
-                    Add Card
+                    Add
                   </button>
                 </div>
               </li>
