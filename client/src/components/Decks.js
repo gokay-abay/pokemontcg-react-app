@@ -33,7 +33,7 @@ const Decks = ({
   // make a post request to create a new deck
   const onSubmit = async () => {
     await axios
-      .post("http://localhost:4000/api/decks", {
+      .post("/api/decks", {
         name: deckName,
       })
       .then((res) => console.log(res))
@@ -43,7 +43,7 @@ const Decks = ({
   // make a delete request to delete a deck
   const deleteDeck = async (e) => {
     await axios
-      .delete(`http://localhost:4000/api/decks/${e.target.value}`)
+      .delete(`/api/decks/${e.target.value}`)
       .then(() => getAllDecks())
       .catch((err) => console.log(err))
   }

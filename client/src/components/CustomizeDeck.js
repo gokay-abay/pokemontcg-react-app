@@ -107,7 +107,7 @@ const CustomizeDeck = ({
   const onSubmit = async (e) => {
     e.preventDefault()
     await axios
-      .put(`http://localhost:4000/api/decks/${localDeck.id}`, {
+      .put(`/api/decks/${localDeck.id}`, {
         cards: localDeck.cards,
       })
       .then((res) => console.log(res))

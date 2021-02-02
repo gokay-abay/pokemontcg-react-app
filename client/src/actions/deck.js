@@ -10,7 +10,7 @@ export const getAllDecks = () => async (dispatch) => {
   }
 
   try {
-    const res = await axios.get("http://localhost:4000/api/decks")
+    const res = await axios.get("/api/decks")
 
     dispatch({
       type: GET_DECKS,
@@ -32,7 +32,7 @@ export const getDeck = (id) => async (dispatch) => {
   }
 
   try {
-    const res = await axios.get(`http://localhost:4000/api/decks/${id}`)
+    const res = await axios.get(`/api/decks/${id}`)
 
     dispatch({
       type: GET_ONE_DECK,
