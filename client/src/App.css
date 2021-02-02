@@ -36,6 +36,12 @@
 
 .navbar-item a {
   color: #f6c406;
+  cursor: pointer;
+}
+
+.navbar-item a:hover {
+  color: white;
+  text-decoration: none;
 }
 
 /* ====================================================== 

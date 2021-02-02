@@ -19,7 +19,9 @@ const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
         <Link to="/decks">My Decks</Link>
       </li>
       <li className="navbar-item">
-        <a onClick={logout}>Logout</a>
+        <Link color="#f6c406" onClick={logout}>
+          Logout
+        </Link>
       </li>
     </ul>
   )
