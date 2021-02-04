@@ -46,6 +46,20 @@ const CustomizeDeck = ({
     // if addedCards is not null run this piece of logic
     if (addedCards !== null && addedCards !== localAddedCards) {
       setLocalAddedCards(addedCards)
+      // let copyDeck = localDeck.cards
+      // for (let i = 0; i < addedCards.length; i++) {
+      //   for (let j = 0; j < localDeck.cards.length; j++) {
+      //     if (addedCards[i].id === localDeck.cards[j].id) {
+      //       setLocalDeck((prevState) => {
+      //         return {
+      //           ...prevState,
+      //           cards: copyDeck.splice(j, 0, addedCards[i]),
+      //         }
+      //       })
+      //     }
+      //   }
+      // }
+      // console.log(localDeck.cards)
       setLocalDeck((prevState) => {
         return {
           ...prevState,
@@ -54,6 +68,10 @@ const CustomizeDeck = ({
       })
     }
   }, [addedCards])
+
+  // iterate through added cards and get card ids of each card
+  // if card id doesnt exist inside the localDeck
+  // append the card to array
 
   // for the number of added card array run a for loop
   // find the id and index of the card which is to be incread in number
@@ -79,9 +97,8 @@ const CustomizeDeck = ({
 
   // function that takes in the card to get the count from the counts dictionary of that particular card
   const getCardCount = (card) => {
-    let cardIds = []
+    let cardIds = localDeck.cards.map((card) => card.id)
     let counts = {}
-    localDeck.cards.forEach((card) => cardIds.push(card.id))
     cardIds.forEach((id) => (counts[id] = (counts[id] || 0) + 1))
     return counts[card.id]
   }
