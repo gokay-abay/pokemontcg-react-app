@@ -46,26 +46,42 @@ const CustomizeDeck = ({
     // if addedCards is not null run this piece of logic
     if (addedCards !== null && addedCards !== localAddedCards) {
       setLocalAddedCards(addedCards)
-      // let copyDeck = localDeck.cards
-      // for (let i = 0; i < addedCards.length; i++) {
-      //   for (let j = 0; j < localDeck.cards.length; j++) {
-      //     if (addedCards[i].id === localDeck.cards[j].id) {
-      //       setLocalDeck((prevState) => {
-      //         return {
-      //           ...prevState,
-      //           cards: copyDeck.splice(j, 0, addedCards[i]),
-      //         }
-      //       })
-      //     }
-      //   }
-      // }
-      // console.log(localDeck.cards)
-      setLocalDeck((prevState) => {
-        return {
-          ...prevState,
-          cards: [...prevState.cards, ...addedCards],
+      // ====== DELETE THIS CHUNK IF IT BREAKS THE CODE
+      let copyDeck = localDeck.cards
+
+      if (localDeck.cards.includes(addedCards[0])) {
+        for (let j = 0; j < localDeck.cards.length; j++) {
+          if (addedCards[0].id === localDeck.cards[j].id) {
+            for (let k = 0; k < addedCards.length; k++) {
+              copyDeck.splice(j, 0, addedCards[k])
+            }
+            setLocalDeck((prevState) => {
+              return {
+                ...prevState,
+                cards: copyDeck,
+              }
+            })
+            return
+          }
         }
-      })
+      } else {
+        setLocalDeck((prevState) => {
+          return {
+            ...prevState,
+            cards: [...prevState.cards, ...addedCards],
+          }
+        })
+      }
+      //return
+
+      //====================================================
+
+      // setLocalDeck((prevState) => {
+      //   return {
+      //     ...prevState,
+      //     cards: [...prevState.cards, ...addedCards],
+      //   }
+      // })
     }
   }, [addedCards])
 
@@ -101,6 +117,23 @@ const CustomizeDeck = ({
     let counts = {}
     cardIds.forEach((id) => (counts[id] = (counts[id] || 0) + 1))
     return counts[card.id]
+  }
+
+  const addOneCard = (card) => {
+    let copyDeck = localDeck.cards
+    for (let j = 0; j < localDeck.cards.length; j++) {
+      if (card.id === localDeck.cards[j].id) {
+        copyDeck.splice(j, 0, card)
+        // console.log(copyDeck)
+        setLocalDeck((prevState) => {
+          return {
+            ...prevState,
+            cards: copyDeck,
+          }
+        })
+        return
+      }
+    }
   }
 
   // remove existing cards from deck
@@ -173,12 +206,12 @@ const CustomizeDeck = ({
                     <li key={index}>
                       <img src={card.imageUrl} alt={card.name} width="50px" />
                       <p>
-                        <span>{card.name}</span> x{getCardCount(card)}
+                        <span>{card.name}</span> x {getCardCount(card)}
                       </p>
                       <div className="btn-div">
                         <button
                           className="btn btn-success"
-                          onClick={() => addCardToDeck(card, 1)}
+                          onClick={() => addOneCard(card)}
                         >
                           <i class="fas fa-plus"></i>
                         </button>

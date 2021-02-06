@@ -94,6 +94,7 @@ const SearchCards = (props) => {
                     className="btn-primary"
                     onClick={() => {
                       props.addCardToDeck(card, qty)
+                      setQty(1)
                     }}
                   >
                     Add
