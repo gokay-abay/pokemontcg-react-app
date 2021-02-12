@@ -1,11 +1,8 @@
 const express = require("express")
 const connectDB = require("./config/db")
-const User = require("./models/User")
-const Deck = require("./models/Deck")
-const { default: axios } = require("axios")
-const { db } = require("./models/User")
 const cors = require("cors")
 const path = require("path")
+const io = require("socket.io")()
 
 const app = express()
 
@@ -70,6 +67,27 @@ app.use(express.json({ extended: false }))
 //   // })
 // })
 
+// on connection emit the socket id so that client knows what to render
+io.on("connection", (socket) => {
+  console.log(`Socket ${socket.id} connected`)
+
+  // on create event send the socket id to the client
+  socket.on("createGame", () => {
+    io.emit("resSocketId", socket.id)
+  })
+
+  socket.on("activePkmn", (card) => {
+    socket.broadcast.emit("backActivePkmn", card)
+  })
+  // socket.on("activePkmn", (card, socketId) => {
+  //   io.emit("backActivePkmn", (card, socketId))
+  // })
+})
+
+// io.on("activePkmn", (socket) => {
+//   socket.emit("activePkmn", socket)
+// })
+
 app.use("/api/auth", require("./routes/api/auth"))
 app.use("/api/users", require("./routes/api/users"))
 app.use("/api/decks", require("./routes/api/decks"))
@@ -88,4 +106,10 @@ if (process.env.NODE_ENV === "production") {
 // port
 const PORT = process.env.PORT || 4000
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+// create server
+const server = app.listen(PORT, () =>
+  console.log(`Server is running on port ${PORT}`)
+)
+
+// listen server with io
+io.listen(server)

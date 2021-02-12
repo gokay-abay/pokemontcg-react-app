@@ -3,8 +3,13 @@ import { Link, Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import { getAllDecks, getDeck } from "../actions/deck"
 import Draggable from "react-draggable"
-
+import { io } from "socket.io-client"
 import PropTypes from "prop-types"
+// REACT DND
+import { DndProvider, useDrag, useDrop } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
+
+const socket = io("http://localhost:4000/")
 
 const Play = ({
   getAllDecks,
@@ -33,8 +38,51 @@ const Play = ({
   const [zValue, setZValue] = useState(1)
   const [copyDeck, setCopyDeck] = useState({})
 
+  const [activePkmn, setActivePkmn] = useState({})
+  const [oppActive, setOppActive] = useState("")
+  const [oppLoaded, setOppLoaded] = useState(false)
+
+  const [socketId, setSocketId] = useState("")
+
   // useEffect(() => {
   // }, [])
+
+  // Two cards sent. player will send their active pokemon and that will be displayed on the opponents other player card
+
+  // save socket id to conditionally render cards
+
+  useEffect(() => {
+    let mounted = true
+    socket.on("resSocketId", (id) => {
+      if (mounted) {
+        setSocketId(id)
+      }
+    })
+    return () => (mounted = false)
+  }, [])
+
+  const createGame = () => {
+    socket.emit("createGame")
+  }
+
+  // I send card with my socket id to server
+  // Server sends me back a card with a socket id
+  // if that socket id matches with my socket id that means it's my card
+  // and I don't render it.
+  // if the socket id is not mine it means it's another players card
+
+  useEffect(() => {
+    let mounted = true
+    socket.on("backActivePkmn", (card) => {
+      if (mounted) {
+        // if (socketId !== servSocketId) {
+        setOppActive(card)
+        setOppLoaded(true)
+        // }
+      }
+    })
+    return () => (mounted = false)
+  }, [activePkmn])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,6 +145,12 @@ const Play = ({
     elem.style.zIndex = zValue
   }
 
+  const playActivePkmn = (card) => {
+    setActivePkmn(card)
+    socket.emit("activePkmn", card)
+  }
+
+  const playEnergy = (card) => {}
   //   const handleOptionChange = (e) => {
   //     setCopyDeck(e.target.value)
   //     console.log(copyDeck)
@@ -117,6 +171,17 @@ const Play = ({
 
   // I need input to ask the user which deck they want
   // get the deck. feed it into the functions.
+
+  function dragoverHandler(ev) {
+    ev.preventDefault()
+    ev.dataTransfer.dropEffect = "move"
+  }
+  function dropHandler(ev) {
+    ev.preventDefault()
+    // Get the id of the target and add the moved element to the target's DOM
+    const data = ev.dataTransfer.getData("application/my-app")
+    ev.target.appendChild(document.getElementById(data))
+  }
 
   if (!isAuthenticated) {
     return <Redirect to="/" />
@@ -139,10 +204,25 @@ const Play = ({
         </select>
         <input className="btn btn-primary" type="submit" value="Select" />
       </form> */}
-      <div className="bench1-placeholder">Bench</div>
+      <div ref={drop} className="bench1-placeholder">
+        Bench
+      </div>
       <div className="bench2-placeholder">Bench</div>
-      <div className="active-pokemon1-placeholder">Active Pokemon</div>
-      <div className="active-pokemon2-placeholder">Active Pokemon</div>
+      <div
+        className="active-pokemon1-placeholder"
+        onDrop={dropHandler}
+        onDragOver={dragoverHandler}
+      >
+        Active Pokemon
+      </div>
+      <div className="active-pokemon2-placeholder">
+        <img
+          src={oppLoaded ? oppActive.imageUrl : ""}
+          draggable="false"
+          // alt={card.name}
+          width="100px"
+        />
+      </div>
       <div className="discard-pile-placeholder">Discard Pile</div>
       <img
         id="card-back-img"
@@ -154,6 +234,9 @@ const Play = ({
       <button onClick={shuffle}>Shuffle</button>
       <button onClick={draw}>Draw</button>
       <button onClick={restart}>Restart</button>
+      <button>Set Active Pkmn</button>
+      <button onClick={createGame}>Create Game</button>
+
       <div className="hand-div">
         <ul className="list" id="hand-ul">
           {hand.map((card, index) => (
@@ -170,6 +253,9 @@ const Play = ({
                   alt={card.name}
                   width="100px"
                 />
+                <button onClick={() => playActivePkmn(card)}>
+                  Set Active Pkmn
+                </button>
               </li>
             </Draggable>
           ))}

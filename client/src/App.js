@@ -9,10 +9,19 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import Login from "./components/auth/Login"
 import Register from "./components/auth/Register"
 import setAuthToken from "./utils/setAuthToken"
+import { io } from "socket.io-client"
+
 // Redux
 import { Provider } from "react-redux"
 import store from "./store"
 import { loadUser } from "./actions/auth"
+
+//const socket = io("http://localhost:4000/")
+
+// message recieved
+// socket.on("play", (msg) => {
+//   console.log(msg)
+// })
 
 // verify token
 if (localStorage.token) {
