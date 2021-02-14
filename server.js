@@ -2,7 +2,11 @@ const express = require("express")
 const connectDB = require("./config/db")
 const cors = require("cors")
 const path = require("path")
-const io = require("socket.io")()
+const io = require("socket.io")({
+  cors: {
+    origin: "*",
+  },
+})
 
 const app = express()
 

@@ -8,6 +8,9 @@ import PropTypes from "prop-types"
 // REACT DND
 import { DndProvider, useDrag, useDrop } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
+import PlayCard from "./PlayCard"
+import SidePanel from "./SidePanel"
+import { pokeCardBack } from "../constants/images"
 
 const socket = io("http://localhost:4000/")
 
@@ -36,16 +39,35 @@ const Play = ({
 
   const [hand, setHand] = useState([])
   const [zValue, setZValue] = useState(1)
-  const [copyDeck, setCopyDeck] = useState({})
 
-  const [activePkmn, setActivePkmn] = useState({})
   const [oppActive, setOppActive] = useState("")
   const [oppLoaded, setOppLoaded] = useState(false)
 
   const [socketId, setSocketId] = useState("")
 
-  // useEffect(() => {
-  // }, [])
+  // ====================== REACT DND ===========================
+
+  // Droppable item state variable
+  // const [draggedCard, setDraggedCard] = useState({})
+  // const [itemDropped, setItemDropped] = useState(false)
+
+  // Droppable Zone
+
+  // const [{ isOver, didDrop }, drop] = useDrop({
+  //   accept: "Card",
+  //   drop: (item, monitor) => {
+  //     setDraggedCard(item)
+  //     setItemDropped(true)
+  //   },
+  //   collect: (monitor) => ({
+  //     isOver: monitor.isOver(),
+  //     didDrop: monitor.didDrop(),
+  //   }),
+  // })
+
+  // console.log(didDrop)
+
+  // ==========================================================
 
   // Two cards sent. player will send their active pokemon and that will be displayed on the opponents other player card
 
@@ -71,18 +93,22 @@ const Play = ({
   // and I don't render it.
   // if the socket id is not mine it means it's another players card
 
-  useEffect(() => {
-    let mounted = true
-    socket.on("backActivePkmn", (card) => {
-      if (mounted) {
-        // if (socketId !== servSocketId) {
-        setOppActive(card)
-        setOppLoaded(true)
-        // }
-      }
-    })
-    return () => (mounted = false)
-  }, [activePkmn])
+  // ==================== SOCKET IO ACTIVE PKMN SET =========================
+
+  // useEffect(() => {
+  //   let mounted = true
+  //   socket.on("backActivePkmn", (card) => {
+  //     if (mounted) {
+  //       // if (socketId !== servSocketId) {
+  //       setOppActive(card)
+  //       setOppLoaded(true)
+  //       // }
+  //     }
+  //   })
+  //   return () => (mounted = false)
+  // }, [activePkmn])
+
+  // ====================  ========================= =========================
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -96,6 +122,76 @@ const Play = ({
     }, 500)
     return () => clearTimeout(timer)
   }, [deck])
+
+  // ====================== SIDE PANEL LOGIC ===========================
+
+  const [selectedCard, setSelectedCard] = useState({})
+  const [indexSelected, setIndexSelected] = useState(0)
+  // const [hoverImage, setHoverImage] = useState("")
+  const [activePkmn, setActivePkmn] = useState({})
+  const [benchPkmn, setBenchPkmn] = useState([])
+  const [discardedPkmn, setDiscardedPkmn] = useState([])
+
+  console.log(indexSelected)
+
+  // console.log(selectedCard)
+  const selectCard = (card) => {
+    setSelectedCard(card)
+  }
+
+  const addActivePkmn = (card) => {
+    let copyBench = benchPkmn
+    for (let j = 0; j < copyBench.length; j++) {
+      if (card.id === copyBench[j].id) {
+        copyBench.splice(j, 1)
+        setBenchPkmn(copyBench)
+        setActivePkmn(card)
+        return
+      }
+    }
+    let copyHand = hand
+    for (let j = 0; j < copyHand.length; j++) {
+      if (card.id === copyHand[j].id) {
+        copyHand.splice(j, 1)
+        setHand(copyHand)
+        setActivePkmn(card)
+        return
+      }
+    }
+  }
+
+  const addBenchPkmn = (card) => {
+    let copyHand = hand
+    for (let j = 0; j < hand.length; j++) {
+      if (card.id === hand[j].id) {
+        copyHand.splice(j, 1)
+        setHand(copyHand)
+        setBenchPkmn([...benchPkmn, card])
+        return
+      }
+    }
+  }
+
+  const switchPkmn = (index) => {
+    let copyBench = benchPkmn
+    let benchSelected = benchPkmn[index]
+    let activeSelected = activePkmn
+
+    setActivePkmn(benchSelected)
+    copyBench.splice(index, 1)
+    copyBench.push(activeSelected)
+    setBenchPkmn(copyBench)
+  }
+
+  const discard = (card) => {
+    if (card.id === activePkmn.id) {
+      setActivePkmn({})
+    }
+    setDiscardedPkmn([card, ...discardedPkmn])
+  }
+
+  //console.log(benchPkmn)
+  // ===================================================================
 
   const shuffle = () => {
     let shuffledDeck = localDeck.cards
@@ -145,10 +241,10 @@ const Play = ({
     elem.style.zIndex = zValue
   }
 
-  const playActivePkmn = (card) => {
-    setActivePkmn(card)
-    socket.emit("activePkmn", card)
-  }
+  // const playActivePkmn = (card) => {
+  //   setActivePkmn(card)
+  //   socket.emit("activePkmn", card)
+  // }
 
   const playEnergy = (card) => {}
   //   const handleOptionChange = (e) => {
@@ -172,17 +268,6 @@ const Play = ({
   // I need input to ask the user which deck they want
   // get the deck. feed it into the functions.
 
-  function dragoverHandler(ev) {
-    ev.preventDefault()
-    ev.dataTransfer.dropEffect = "move"
-  }
-  function dropHandler(ev) {
-    ev.preventDefault()
-    // Get the id of the target and add the moved element to the target's DOM
-    const data = ev.dataTransfer.getData("application/my-app")
-    ev.target.appendChild(document.getElementById(data))
-  }
-
   if (!isAuthenticated) {
     return <Redirect to="/" />
   }
@@ -204,60 +289,122 @@ const Play = ({
         </select>
         <input className="btn btn-primary" type="submit" value="Select" />
       </form> */}
-      <div ref={drop} className="bench1-placeholder">
-        Bench
+      <div className="hand-placeholder">
+        {hand &&
+          hand.map((card, index) => (
+            <img
+              width="75px"
+              src={card.imageUrl}
+              alt=""
+              onClick={() => {
+                setIndexSelected(index)
+                setSelectedCard(card)
+              }}
+              // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
+              // onMouseLeave={() => setHoverImage("")}
+            />
+          ))}
+      </div>
+      <div className="bench1-placeholder">
+        {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
+        {benchPkmn &&
+          benchPkmn.map((card, index) => (
+            <img
+              width="80px"
+              src={card.imageUrl}
+              alt=""
+              onClick={() => {
+                setIndexSelected(index)
+                setSelectedCard(card)
+              }}
+              // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
+              // onMouseLeave={() => setHoverImage("")}
+            />
+          ))}
       </div>
       <div className="bench2-placeholder">Bench</div>
-      <div
-        className="active-pokemon1-placeholder"
-        onDrop={dropHandler}
-        onDragOver={dragoverHandler}
-      >
-        Active Pokemon
+      <div className="active-pokemon1-placeholder">
+        {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
+        {activePkmn && (
+          <img
+            width="100%"
+            src={activePkmn.imageUrl}
+            alt=""
+            onClick={() => setSelectedCard(activePkmn)}
+            // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
+            // onMouseLeave={() => setHoverImage("")}
+          />
+        )}
       </div>
       <div className="active-pokemon2-placeholder">
         <img
-          src={oppLoaded ? oppActive.imageUrl : ""}
-          draggable="false"
-          // alt={card.name}
-          width="100px"
+        // src={oppLoaded ? oppActive.imageUrl : ""}
+        // draggable="false"
+        // // alt={card.name}
+        // width="100px"
         />
       </div>
-      <div className="discard-pile-placeholder">Discard Pile</div>
+      <div className="discard-pile-placeholder">
+        {discardedPkmn[0] && (
+          <img
+            width="80px"
+            src={discardedPkmn[0].imageUrl}
+            alt=""
+            onClick={() => setSelectedCard(discardedPkmn[0])}
+            // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
+            // onMouseLeave={() => setHoverImage("")}
+          />
+        )}
+      </div>
+      <div className="side-panel">
+        <SidePanel
+          card={selectedCard}
+          index={indexSelected}
+          setActive={addActivePkmn}
+          setBench={addBenchPkmn}
+          setDiscard={discard}
+          setSwitch={switchPkmn}
+          // hoverImage={hoverImage}
+        />
+      </div>
       <img
         id="card-back-img"
         draggable="false"
-        src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4f7705ec-8c49-4eed-a56e-c21f3985254c/dah43cy-a8e121cb-934a-40f6-97c7-fa2d77130dd5.png/v1/fill/w_1024,h_1420,strp/pokemon_card_backside_in_high_resolution_by_atomicmonkeytcg_dah43cy-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD0xNDIwIiwicGF0aCI6IlwvZlwvNGY3NzA1ZWMtOGM0OS00ZWVkLWE1NmUtYzIxZjM5ODUyNTRjXC9kYWg0M2N5LWE4ZTEyMWNiLTkzNGEtNDBmNi05N2M3LWZhMmQ3NzEzMGRkNS5wbmciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.6Au-hxTt7FuZ5paCMWMJrAiCi-ClaG35bEG2TgGg0VE"
+        src={pokeCardBack}
         alt="pokecard"
         width="100px"
       />
-      <button onClick={shuffle}>Shuffle</button>
-      <button onClick={draw}>Draw</button>
       <button onClick={restart}>Restart</button>
       <button>Set Active Pkmn</button>
       <button onClick={createGame}>Create Game</button>
+      <button onClick={shuffle}>Shuffle</button>
+      <button onClick={draw}>Draw</button>
 
       <div className="hand-div">
         <ul className="list" id="hand-ul">
           {hand.map((card, index) => (
-            <Draggable>
-              <li
-                className="poke-card-game"
-                key={index}
-                id={index}
-                onClick={() => bringFront(index)}
-              >
-                <img
-                  src={card.imageUrl}
-                  draggable="false"
-                  alt={card.name}
-                  width="100px"
-                />
-                <button onClick={() => playActivePkmn(card)}>
-                  Set Active Pkmn
-                </button>
-              </li>
-            </Draggable>
+            // <Draggable>
+            // <PlayCard
+            //   index={index}
+            //   card={card}
+            //   onClick={}
+            // />
+            <li
+              className="poke-card-game"
+              key={index}
+              id={index}
+              onClick={() => setSelectedCard(card)}
+              // onClick={() => bringFront(index)}
+            >
+              <img
+                src={card.imageUrl}
+                draggable="false"
+                alt={card.name}
+                width="100px"
+              />
+              {/* <button onClick={() => playActivePkmn(card)}>Set Active Pkmn</button> */}
+            </li>
+            // </Draggable>
           ))}
         </ul>
       </div>
