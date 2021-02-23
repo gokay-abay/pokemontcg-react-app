@@ -10,8 +10,9 @@ const SidePanel = ({
   setBench,
   setSwitch,
   setDiscard,
+  setEnergy,
 }) => {
-  console.log(card)
+  //   console.log(card)
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
   const pokemon = (
@@ -25,7 +26,7 @@ const SidePanel = ({
 
   const energy = (
     <div className="btn-group">
-      <button>Attach to Pkmn</button>
+      <button onClick={() => setEnergy(card, index)}>Attach to Pkmn</button>
       <button>Discard</button>
     </div>
   )
@@ -46,17 +47,11 @@ const SidePanel = ({
       <div className="pokecard-back">
         <img
           width="100%"
-          src={card.imageUrl ? card.imageUrl : hoverImage}
-          //   src={hoverImage !== "" ? hoverImage : card.imageUrl}
-          alt=""
+          src={card.imageUrl ? card.imageUrl : pokeCardBack}
+          alt={card.name}
         />
       </div>
       {cardTypes()}
-      {/* <div className="btn-group">
-        <button>PlaceHolder</button>
-        <button>PlaceHolder</button>
-        <button>PlaceHolder</button>
-      </div> */}
     </div>
   )
 }

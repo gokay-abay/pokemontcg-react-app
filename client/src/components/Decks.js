@@ -95,7 +95,7 @@ const Decks = ({
                       onClick(e)
                     }}
                   >
-                    Customize
+                    Edit
                   </button>
                 </Link>
                 <button
