@@ -137,6 +137,7 @@ const Play = ({
   const [energy, setEnergy] = useState()
 
   console.log(indexSelected)
+  console.log(energy)
 
   // console.log(selectedCard)
   // selected card can have a type
@@ -147,7 +148,7 @@ const Play = ({
         case "activePkmn":
           let copyEnergies = activePkmn.energies
           console.log(copyEnergies)
-          copyEnergies.push(energy)
+          copyEnergies.push(energy.card)
           setActivePkmn((prevState) => {
             return {
               ...prevState,
@@ -157,13 +158,15 @@ const Play = ({
           break
         case "benchPkmn":
           let copyBench = benchPkmn
-          copyBench[index].energies.push(energy)
+          copyBench[index].energies.push(energy.card)
           console.log(copyBench)
           setBenchPkmn(copyBench)
           break
         default:
           return
       }
+      // get the card with index
+      removeCardfromHand(energy.index)
       setEnergy()
     }
   }
@@ -228,7 +231,8 @@ const Play = ({
     // when event listeners fired we can get the card and attach the energy card to it
     // we need to store the selected energy card in a comp level state
     //
-    setEnergy(card)
+    console.log(energy)
+    setEnergy({ card: card, index: index })
   }
 
   const discard = (card) => {
@@ -238,8 +242,11 @@ const Play = ({
     setDiscardedPkmn([card, ...discardedPkmn])
   }
 
-  const moveCard = (card, index, loc1, loc2) => {}
-
+  const removeCardfromHand = (index) => {
+    let copyHand = hand
+    copyHand.splice(index, 1)
+    setHand(copyHand)
+  }
   //console.log(benchPkmn)
   // ===================================================================
 
@@ -348,7 +355,7 @@ const Play = ({
               alt=""
               onClick={() => {
                 setIndexSelected(index)
-                setSelectedCard(card)
+                selectCard(card, index)
               }}
               // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
               // onMouseLeave={() => setHoverImage("")}
@@ -397,7 +404,7 @@ const Play = ({
                   style={{ left: (index + 1) * 15, zIndex: (index + 1) * -5 }}
                   width="100%"
                   src={energy.imageUrl}
-                  onClick={() => selectCard(energy, "energy")}
+                  onClick={() => selectCard(energy, "energy", index)}
                 />
               ))}
             <img

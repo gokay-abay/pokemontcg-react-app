@@ -190,7 +190,7 @@ const CustomizeDeck = ({
             <input
               className="btn btn-dark"
               type="button"
-              value="Cancel"
+              value="Reset"
               onClick={resetChanges}
             />
             <input
