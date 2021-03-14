@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/gokay-abay/pokemontcg-react-app#readme",
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.3",
