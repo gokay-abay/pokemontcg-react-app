@@ -13,6 +13,7 @@ const SidePanel = ({
   setEnergy,
   isActive,
   returnToHand,
+  returnToDeck,
 }) => {
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
@@ -21,7 +22,9 @@ const SidePanel = ({
   const pokemon = (
     <>
       {!isActive && (
-        <button onClick={() => setActive(card.card)}>Active Pkmn</button>
+        <button onClick={() => setActive(card.card, card.location, card.index)}>
+          Active Pkmn
+        </button>
       )}
       {card.location === "hand" && (
         <button onClick={() => setBench(card.card, card.location, card.index)}>
@@ -88,6 +91,13 @@ const SidePanel = ({
             Return to Hand
           </button>
         )}
+        <button
+          onClick={() =>
+            returnToDeck(card.card, card.location, card.index, card.nestedIndex)
+          }
+        >
+          Return to Deck
+        </button>
       </div>
     </div>
   );

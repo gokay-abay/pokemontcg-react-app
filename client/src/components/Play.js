@@ -12,6 +12,9 @@ import PlayCard from "./PlayCard";
 import SidePanel from "./SidePanel";
 import { pokeCardBack } from "../constants/images";
 
+// MATERIAL UI
+import Modal from "@material-ui/core/Modal";
+
 const socket = io("http://localhost:4000/");
 
 const Play = ({
@@ -177,49 +180,23 @@ const Play = ({
     }
   };
 
-  const addActivePkmn = (card) => {
-    let copyBench = benchPkmn;
-    for (let j = 0; j < copyBench.length; j++) {
-      if (card.id === copyBench[j].pkmn.id) {
-        copyBench.splice(j, 1);
-        setBenchPkmn(copyBench);
-        setActivePkmn((prevState) => {
-          return {
-            ...prevState,
-            pkmn: card,
-          };
-        });
-        return;
-      }
+  // SET ACTIVE PKMN
+  const addActivePkmn = (card, location, index) => {
+    if (location === "hand") {
+      card = removeCardfromHand(index);
+    } else if (location === "benchPkmn") {
+      card = removeFromBench(index);
     }
-    let copyHand = hand;
-    for (let j = 0; j < copyHand.length; j++) {
-      if (card.id === copyHand[j].id) {
-        copyHand.splice(j, 1);
-        setHand(copyHand);
-        setActivePkmn((prevState) => {
-          return {
-            ...prevState,
-            pkmn: card,
-          };
-        });
-        return;
-      }
-    }
+    setActivePkmn({ pkmn: card[0], energies: [] });
   };
 
-  const addBenchPkmn = (card) => {
-    let copyHand = hand;
-    for (let j = 0; j < hand.length; j++) {
-      if (card.id === hand[j].id) {
-        copyHand.splice(j, 1);
-        setHand(copyHand);
-        setBenchPkmn([...benchPkmn, { pkmn: card, energies: [] }]);
-        return;
-      }
-    }
+  // ADD PKMN TO BENCH
+  const addBenchPkmn = (card, location, index) => {
+    card = removeCardfromHand(index);
+    setBenchPkmn([...benchPkmn, { pkmn: card[0], energies: [] }]);
   };
 
+  // SWITCH PKMN
   const switchPkmn = (index) => {
     let copyBench = benchPkmn;
     let benchSelected = benchPkmn[index];
@@ -241,6 +218,7 @@ const Play = ({
     setEnergy({ card: card, index: index });
   };
 
+  // DISCARD A CARD
   const discard = (card, location, index, energyIndex) => {
     if (location === "activePkmn") {
       setDiscardedPkmn([card, ...activePkmn.energies, ...discardedPkmn]);
@@ -280,8 +258,9 @@ const Play = ({
 
   const removeCardfromHand = (index) => {
     let copyHand = hand;
-    copyHand.splice(index, 1);
+    const removedCard = copyHand.splice(index, 1);
     setHand(copyHand);
+    return removedCard;
   };
 
   const removeFromBench = (index) => {
@@ -306,7 +285,7 @@ const Play = ({
     return removedEnergy;
   };
 
-  const removeAndAddToHand = (card, location, index, energyIndex) => {
+  const returnToHand = (card, location, index, energyIndex) => {
     if (location === "benchPkmn") {
       card = removeFromBench(index);
     } else if (location === "activePkmn") {
@@ -319,8 +298,7 @@ const Play = ({
     setHand([...hand, ...card]);
   };
 
-  const returnCardToDeck = (card, location, index, energyIndex) => {
-    // select a card and put it back to deck
+  const returnToDeck = (card, location, index, energyIndex) => {
     if (location === "benchPkmn") {
       card = removeFromBench(index);
     } else if (location === "activePkmn") {
@@ -329,8 +307,17 @@ const Play = ({
       card = removeEnergyBench(index, energyIndex);
     } else if (location === "energyActive") {
       card = removeEnergyActive(energyIndex);
+    } else if (location === "hand") {
+      card = removeCardfromHand(index);
     }
-    setHand([...card, ...deck]);
+
+    const newDeck = [...card, ...localDeck.cards];
+    setLocalDeck((prevState) => {
+      return {
+        ...prevState,
+        cards: newDeck,
+      };
+    });
   };
 
   const pickCardFromDeck = () => {
@@ -430,8 +417,29 @@ const Play = ({
   }
 
   return (
-    <div className="playmat">
-      {/* <form onSubmit={onSubmit}>
+    <div className="side-by-side">
+      <div className="side-panel">
+        <SidePanel
+          card={selectedCard}
+          index={indexSelected}
+          setActive={addActivePkmn}
+          setBench={addBenchPkmn}
+          setDiscard={discard}
+          setSwitch={switchPkmn}
+          setEnergy={attachEnergy}
+          isActive={activePkmn.pkmn}
+          returnToHand={returnToHand}
+          returnToDeck={returnToDeck}
+        />
+        <div className="btn-group">
+          <button onClick={draw}>Draw</button>
+          <button onClick={shuffle}>Shuffle</button>
+          <button onClick={restart}>Restart</button>
+        </div>
+      </div>
+
+      <div className="playmat">
+        {/* <form onSubmit={onSubmit}>
         <select
           className="form-control select-item"
           value={deck}
@@ -446,138 +454,117 @@ const Play = ({
         </select>
         <input className="btn btn-primary" type="submit" value="Select" />
       </form> */}
-      <div className="hand-placeholder">
-        {hand &&
-          hand.map((card, index) => (
-            <img
-              width="75px"
-              src={card.imageUrl}
-              alt=""
-              onClick={() => {
-                setIndexSelected(index);
-                selectCard(card, "hand", index);
-              }}
-              // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
-              // onMouseLeave={() => setHoverImage("")}
-            />
-          ))}
-      </div>
-      <div className="bench1-placeholder">
-        {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
-        {benchPkmn &&
-          benchPkmn.map((card, index) => (
-            <div style={{ position: "relative", margin: 10 }}>
+        <div className="hand-placeholder">
+          {hand &&
+            hand.map((card, index) => (
               <img
-                key={index}
-                width="60px"
-                src={card.pkmn.imageUrl}
+                width="75px"
+                src={card.imageUrl}
                 alt=""
                 onClick={() => {
                   setIndexSelected(index);
-                  selectCard(card.pkmn, "benchPkmn", index);
+                  selectCard(card, "hand", index);
                 }}
+                // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
+                // onMouseLeave={() => setHoverImage("")}
               />
-              {card.energies &&
-                card.energies.map((energy, energyIndex) => (
+            ))}
+        </div>
+        <div className="bench1-placeholder">
+          {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
+          {benchPkmn &&
+            benchPkmn.map((card, index) => (
+              <div style={{ position: "relative", margin: 10 }}>
+                <img
+                  key={index}
+                  width="60px"
+                  src={card.pkmn.imageUrl}
+                  alt=""
+                  onClick={() => {
+                    setIndexSelected(index);
+                    selectCard(card.pkmn, "benchPkmn", index);
+                  }}
+                />
+                {card.energies &&
+                  card.energies.map((energy, energyIndex) => (
+                    <img
+                      className="attached-energy"
+                      style={{
+                        left: (energyIndex + 1) * 10,
+                        zIndex: (energyIndex + 1) * -5,
+                      }}
+                      width="60px"
+                      src={energy.imageUrl}
+                      onClick={() =>
+                        selectCard(energy, "energyBench", index, energyIndex)
+                      }
+                    />
+                  ))}
+              </div>
+            ))}
+        </div>
+        <div className="bench2-placeholder">Bench</div>
+        <div className="active-pokemon1-placeholder">
+          {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
+          {activePkmn && (
+            <div>
+              {activePkmn.energies &&
+                activePkmn.energies.map((energy, energyIndex) => (
                   <img
                     className="attached-energy"
                     style={{
-                      left: (energyIndex + 1) * 10,
+                      left: (energyIndex + 1) * 15,
                       zIndex: (energyIndex + 1) * -5,
                     }}
-                    width="60px"
+                    width="100%"
                     src={energy.imageUrl}
                     onClick={() =>
-                      selectCard(energy, "energyBench", index, energyIndex)
+                      selectCard(energy, "energyActive", 0, energyIndex)
                     }
                   />
                 ))}
+              <img
+                width="100%"
+                style={{ zIndex: 50 }}
+                src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
+                alt=""
+                onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
+              />
             </div>
-          ))}
-      </div>
-      <div className="bench2-placeholder">Bench</div>
-      <div className="active-pokemon1-placeholder">
-        {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
-        {activePkmn && (
-          <div>
-            {activePkmn.energies &&
-              activePkmn.energies.map((energy, energyIndex) => (
-                <img
-                  className="attached-energy"
-                  style={{
-                    left: (energyIndex + 1) * 15,
-                    zIndex: (energyIndex + 1) * -5,
-                  }}
-                  width="100%"
-                  src={energy.imageUrl}
-                  onClick={() =>
-                    selectCard(energy, "energyActive", 0, energyIndex)
-                  }
-                />
-              ))}
-            <img
-              width="100%"
-              style={{ zIndex: 50 }}
-              src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
-              alt=""
-              onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
-            />
-          </div>
-        )}
-      </div>
-      <div className="active-pokemon2-placeholder">
-        <img
-        // src={oppLoaded ? oppActive.imageUrl : ""}
-        // draggable="false"
-        // // alt={card.name}
-        // width="100px"
-        />
-      </div>
-      <div className="discard-pile-placeholder">
-        {discardedPkmn[0] && (
+          )}
+        </div>
+        <div className="active-pokemon2-placeholder">
           <img
-            width="80px"
-            src={discardedPkmn[0].imageUrl}
-            alt=""
-            onClick={() =>
-              selectCard(discardedPkmn[0], "discardedPkmn", "discardPile")
-            }
-          />
-        )}
-      </div>
-      <>
-        <div className="side-panel">
-          <SidePanel
-            card={selectedCard}
-            index={indexSelected}
-            setActive={addActivePkmn}
-            setBench={addBenchPkmn}
-            setDiscard={discard}
-            setSwitch={switchPkmn}
-            setEnergy={attachEnergy}
-            isActive={activePkmn.pkmn}
-            returnToHand={removeAndAddToHand}
-            // hoverImage={hoverImage}
+          // src={oppLoaded ? oppActive.imageUrl : ""}
+          // draggable="false"
+          // // alt={card.name}
+          // width="100px"
           />
         </div>
-        <div className="btn-group">
-          <button onClick={restart}>Restart</button>
-          <button onClick={createGame}>Create Game</button>
-          <button onClick={shuffle}>Shuffle</button>
-          <button onClick={draw}>Draw</button>
+        <div className="discard-pile-placeholder">
+          {discardedPkmn[0] && (
+            <img
+              width="80px"
+              src={discardedPkmn[0].imageUrl}
+              alt=""
+              onClick={() =>
+                selectCard(discardedPkmn[0], "discardedPkmn", "discardPile")
+              }
+            />
+          )}
         </div>
-      </>
-      <img
-        id="card-back-img"
-        draggable="false"
-        src={pokeCardBack}
-        alt="pokecard"
-        width="100px"
-      />
 
-      {/* <div className="hand-div">
+        <img
+          id="card-back-img"
+          draggable="false"
+          src={pokeCardBack}
+          alt="pokecard"
+          width="100px"
+        />
+
+        {/* <div className="hand-div">
         <ul className="list" id="hand-ul"> */}
-      {/* {hand.map((card, index) => (
+        {/* {hand.map((card, index) => (
             // <Draggable>
             // <PlayCard
             //   index={index}
@@ -598,11 +585,12 @@ const Play = ({
                 width="100px"
               />
               {/* <button onClick={() => playActivePkmn(card)}>Set Active Pkmn</button> */}
-      {/* </li> */}
-      {/* // </Draggable> */}
-      {/* ))} */}
-      {/* </ul>
+        {/* </li> */}
+        {/* // </Draggable> */}
+        {/* ))} */}
+        {/* </ul>
       </div> */}
+      </div>
     </div>
   );
 };
