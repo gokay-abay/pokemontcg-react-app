@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react"
-import { Link, Redirect } from "react-router-dom"
-import { connect } from "react-redux"
-import { getAllDecks, getDeck } from "../actions/deck"
-import Draggable from "react-draggable"
-import { io } from "socket.io-client"
-import PropTypes from "prop-types"
+import React, { useState, useEffect } from "react";
+import { Link, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import { getAllDecks, getDeck } from "../actions/deck";
+import Draggable from "react-draggable";
+import { io } from "socket.io-client";
+import PropTypes from "prop-types";
 // REACT DND
-import { DndProvider, useDrag, useDrop } from "react-dnd"
-import { HTML5Backend } from "react-dnd-html5-backend"
-import PlayCard from "./PlayCard"
-import SidePanel from "./SidePanel"
-import { pokeCardBack } from "../constants/images"
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import PlayCard from "./PlayCard";
+import SidePanel from "./SidePanel";
+import { pokeCardBack } from "../constants/images";
 
-const socket = io("http://localhost:4000/")
+const socket = io("http://localhost:4000/");
 
 const Play = ({
   getAllDecks,
@@ -35,15 +35,15 @@ const Play = ({
     cards: [],
     name: "",
     id: "",
-  })
+  });
 
-  const [hand, setHand] = useState([])
-  const [zValue, setZValue] = useState(1)
+  const [hand, setHand] = useState([]);
+  const [zValue, setZValue] = useState(1);
 
-  const [oppActive, setOppActive] = useState("")
-  const [oppLoaded, setOppLoaded] = useState(false)
+  const [oppActive, setOppActive] = useState("");
+  const [oppLoaded, setOppLoaded] = useState(false);
 
-  const [socketId, setSocketId] = useState("")
+  const [socketId, setSocketId] = useState("");
 
   // ====================== REACT DND ===========================
 
@@ -74,18 +74,18 @@ const Play = ({
   // save socket id to conditionally render cards
 
   useEffect(() => {
-    let mounted = true
+    let mounted = true;
     socket.on("resSocketId", (id) => {
       if (mounted) {
-        setSocketId(id)
+        setSocketId(id);
       }
-    })
-    return () => (mounted = false)
-  }, [])
+    });
+    return () => (mounted = false);
+  }, []);
 
   const createGame = () => {
-    socket.emit("createGame")
-  }
+    socket.emit("createGame");
+  };
 
   // I send card with my socket id to server
   // Server sends me back a card with a socket id
@@ -117,113 +117,119 @@ const Play = ({
           cards: deck.cards,
           name: deck.name,
           id: deck._id,
-        })
+        });
       }
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [deck])
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [deck]);
 
   // ====================== SIDE PANEL LOGIC ===========================
 
-  const [selectedCard, setSelectedCard] = useState({})
-  const [indexSelected, setIndexSelected] = useState(0)
+  const [selectedCard, setSelectedCard] = useState({
+    card: "",
+    location: "",
+    index: "",
+    nestedIndex: "",
+  });
+  const [indexSelected, setIndexSelected] = useState(0);
   // const [hoverImage, setHoverImage] = useState("")
   const [activePkmn, setActivePkmn] = useState({
     pkmn: "",
     energies: [],
-  })
-  const [benchPkmn, setBenchPkmn] = useState([])
-  const [discardedPkmn, setDiscardedPkmn] = useState([])
-  const [energy, setEnergy] = useState()
-
-  console.log(indexSelected)
-  console.log(energy)
+  });
+  const [benchPkmn, setBenchPkmn] = useState([]);
+  const [discardedPkmn, setDiscardedPkmn] = useState([]);
+  const [energy, setEnergy] = useState();
 
   // console.log(selectedCard)
   // selected card can have a type
-  const selectCard = (card, type, index) => {
-    setSelectedCard(card)
+  const selectCard = (card, location, index, energyIndex) => {
+    setSelectedCard({
+      card: card,
+      location: location,
+      index: index,
+      nestedIndex: energyIndex,
+    });
     if (energy) {
-      switch (type) {
+      switch (location) {
         case "activePkmn":
-          let copyEnergies = activePkmn.energies
-          console.log(copyEnergies)
-          copyEnergies.push(energy.card)
+          let copyEnergies = activePkmn.energies;
+          copyEnergies.push(energy.card);
           setActivePkmn((prevState) => {
             return {
               ...prevState,
               energies: copyEnergies,
-            }
-          })
-          break
+            };
+          });
+          break;
         case "benchPkmn":
-          let copyBench = benchPkmn
-          copyBench[index].energies.push(energy.card)
-          console.log(copyBench)
-          setBenchPkmn(copyBench)
-          break
+          let copyBench = benchPkmn;
+          copyBench[index].energies.push(energy.card);
+          console.log(copyBench);
+          setBenchPkmn(copyBench);
+          break;
         default:
-          return
+          return;
       }
       // get the card with index
-      removeCardfromHand(energy.index)
-      setEnergy()
+      removeCardfromHand(energy.index);
+      setEnergy();
     }
-  }
+  };
 
   const addActivePkmn = (card) => {
-    let copyBench = benchPkmn
+    let copyBench = benchPkmn;
     for (let j = 0; j < copyBench.length; j++) {
       if (card.id === copyBench[j].pkmn.id) {
-        copyBench.splice(j, 1)
-        setBenchPkmn(copyBench)
+        copyBench.splice(j, 1);
+        setBenchPkmn(copyBench);
         setActivePkmn((prevState) => {
           return {
             ...prevState,
             pkmn: card,
-          }
-        })
-        return
+          };
+        });
+        return;
       }
     }
-    let copyHand = hand
+    let copyHand = hand;
     for (let j = 0; j < copyHand.length; j++) {
       if (card.id === copyHand[j].id) {
-        copyHand.splice(j, 1)
-        setHand(copyHand)
+        copyHand.splice(j, 1);
+        setHand(copyHand);
         setActivePkmn((prevState) => {
           return {
             ...prevState,
             pkmn: card,
-          }
-        })
-        return
+          };
+        });
+        return;
       }
     }
-  }
+  };
 
   const addBenchPkmn = (card) => {
-    let copyHand = hand
+    let copyHand = hand;
     for (let j = 0; j < hand.length; j++) {
       if (card.id === hand[j].id) {
-        copyHand.splice(j, 1)
-        setHand(copyHand)
-        setBenchPkmn([...benchPkmn, { pkmn: card, energies: [] }])
-        return
+        copyHand.splice(j, 1);
+        setHand(copyHand);
+        setBenchPkmn([...benchPkmn, { pkmn: card, energies: [] }]);
+        return;
       }
     }
-  }
+  };
 
   const switchPkmn = (index) => {
-    let copyBench = benchPkmn
-    let benchSelected = benchPkmn[index]
-    let activeSelected = activePkmn
+    let copyBench = benchPkmn;
+    let benchSelected = benchPkmn[index];
+    let activeSelected = activePkmn;
 
-    setActivePkmn(benchSelected)
-    copyBench.splice(index, 1)
-    copyBench.push(activeSelected)
-    setBenchPkmn(copyBench)
-  }
+    setActivePkmn(benchSelected);
+    copyBench.splice(index, 1);
+    copyBench.push(activeSelected);
+    setBenchPkmn(copyBench);
+  };
 
   const attachEnergy = (card, index) => {
     // when this fired prompt user to select another card
@@ -231,79 +237,173 @@ const Play = ({
     // when event listeners fired we can get the card and attach the energy card to it
     // we need to store the selected energy card in a comp level state
     //
-    console.log(energy)
-    setEnergy({ card: card, index: index })
-  }
+    console.log(energy);
+    setEnergy({ card: card, index: index });
+  };
 
-  const discard = (card) => {
-    if (card.id === activePkmn.id) {
-      setActivePkmn({})
+  const discard = (card, location, index, energyIndex) => {
+    if (location === "activePkmn") {
+      setDiscardedPkmn([card, ...activePkmn.energies, ...discardedPkmn]);
+      setActivePkmn({
+        pkmn: "",
+        energies: [],
+      });
+    } else if (location === "benchPkmn") {
+      setDiscardedPkmn([card, ...benchPkmn[index]?.energies, ...discardedPkmn]);
+      removeFromBench(index);
+    } else if (location === "hand") {
+      setDiscardedPkmn([card, ...discardedPkmn]);
+      removeCardfromHand(index);
+    } else if (location === "energyBench") {
+      removeEnergyBench(index, energyIndex);
+      setDiscardedPkmn([card, ...discardedPkmn]);
+    } else if (location === "energyActive") {
+      removeEnergyActive(energyIndex);
+      setDiscardedPkmn([card, ...discardedPkmn]);
     }
-    setDiscardedPkmn([card, ...discardedPkmn])
-  }
+  };
+
+  const addCardToHand = (card) => {
+    let copyHand = hand;
+    copyHand.push(card);
+    setHand(copyHand);
+  };
+
+  const removeActivePkmn = () => {
+    let copyActive = activePkmn;
+    setActivePkmn({
+      pkmn: "",
+      energies: [],
+    });
+    return [copyActive.pkmn, ...copyActive.energies];
+  };
 
   const removeCardfromHand = (index) => {
-    let copyHand = hand
-    copyHand.splice(index, 1)
-    setHand(copyHand)
-  }
-  //console.log(benchPkmn)
+    let copyHand = hand;
+    copyHand.splice(index, 1);
+    setHand(copyHand);
+  };
+
+  const removeFromBench = (index) => {
+    let copyBench = benchPkmn;
+    const removedCards = copyBench.splice(index, 1);
+    setBenchPkmn(copyBench);
+    return [removedCards[0].pkmn, ...removedCards[0].energies];
+  };
+
+  const removeEnergyBench = (index, energyIndex) => {
+    let copyBench = benchPkmn;
+    const removedEnergy = copyBench[index].energies.splice(energyIndex, 1);
+    setBenchPkmn(copyBench);
+    return removedEnergy;
+  };
+
+  const removeEnergyActive = (energyIndex) => {
+    console.log(energyIndex);
+    let active = activePkmn;
+    const removedEnergy = active.energies.splice(energyIndex, 1);
+    setActivePkmn(active);
+    return removedEnergy;
+  };
+
+  const removeAndAddToHand = (card, location, index, energyIndex) => {
+    if (location === "benchPkmn") {
+      card = removeFromBench(index);
+    } else if (location === "activePkmn") {
+      card = removeActivePkmn();
+    } else if (location === "energyBench") {
+      card = removeEnergyBench(index, energyIndex);
+    } else if (location === "energyActive") {
+      card = removeEnergyActive(energyIndex);
+    }
+    setHand([...hand, ...card]);
+  };
+
+  const returnCardToDeck = (card, location, index, energyIndex) => {
+    // select a card and put it back to deck
+    if (location === "benchPkmn") {
+      card = removeFromBench(index);
+    } else if (location === "activePkmn") {
+      card = removeActivePkmn();
+    } else if (location === "energyBench") {
+      card = removeEnergyBench(index, energyIndex);
+    } else if (location === "energyActive") {
+      card = removeEnergyActive(energyIndex);
+    }
+    setHand([...card, ...deck]);
+  };
+
+  const pickCardFromDeck = () => {
+    // look at the cards inside the deck and pick cards
+    // Opens up a modal that shows the cards in the deck
+    // each card can be clicked to return to hand
+  };
+
+  const retrieveCardFromDiscard = () => {
+    // look at cards in discard and put cards to hand
+    // Opens up a modal that shows the cards in the discard
+    // each card can be clicked to return to hand
+  };
+
+  const putDeckCardsInOrder = () => {
+    // allow players to reorder the deck
+  };
   // ===================================================================
 
   const shuffle = () => {
-    let shuffledDeck = localDeck.cards
+    let shuffledDeck = localDeck.cards;
     if (shuffledDeck.length > 0) {
       for (let i = 0; i < 1000; i++) {
-        let location1 = Math.floor(Math.random() * shuffledDeck.length)
-        let location2 = Math.floor(Math.random() * shuffledDeck.length)
-        let temp = shuffledDeck[location1]
-        shuffledDeck[location1] = shuffledDeck[location2]
-        shuffledDeck[location2] = temp
+        let location1 = Math.floor(Math.random() * shuffledDeck.length);
+        let location2 = Math.floor(Math.random() * shuffledDeck.length);
+        let temp = shuffledDeck[location1];
+        shuffledDeck[location1] = shuffledDeck[location2];
+        shuffledDeck[location2] = temp;
       }
     }
     setLocalDeck((prevState) => {
       return {
         ...prevState,
         cards: shuffledDeck,
-      }
-    })
-  }
+      };
+    });
+  };
 
   // draws the top card from the deck
   const draw = () => {
-    let drawnDeck = localDeck.cards
+    let drawnDeck = localDeck.cards;
     if (drawnDeck.length > 0) {
-      let drawnCard = drawnDeck.shift()
+      let drawnCard = drawnDeck.shift();
       setLocalDeck((prevState) => {
         return {
           ...prevState,
           cards: drawnDeck,
-        }
-      })
-      setHand([...hand, drawnCard])
+        };
+      });
+      setHand([...hand, drawnCard]);
     }
-  }
+  };
 
   const restart = () => {
-    setHand([])
-    setZValue(1)
-    getDeck(localDeck.id)
-  }
+    setHand([]);
+    setZValue(1);
+    getDeck(localDeck.id);
+  };
 
   // Brings the card front on click
   // get the element by its id and then increase its z-index by 1
   const bringFront = (cardId) => {
-    let elem = document.getElementById(cardId)
-    setZValue(zValue + 1)
-    elem.style.zIndex = zValue
-  }
+    let elem = document.getElementById(cardId);
+    setZValue(zValue + 1);
+    elem.style.zIndex = zValue;
+  };
 
   // const playActivePkmn = (card) => {
   //   setActivePkmn(card)
   //   socket.emit("activePkmn", card)
   // }
 
-  const playEnergy = (card) => {}
+  const playEnergy = (card) => {};
   //   const handleOptionChange = (e) => {
   //     setCopyDeck(e.target.value)
   //     console.log(copyDeck)
@@ -326,7 +426,7 @@ const Play = ({
   // get the deck. feed it into the functions.
 
   if (!isAuthenticated) {
-    return <Redirect to="/" />
+    return <Redirect to="/" />;
   }
 
   return (
@@ -354,8 +454,8 @@ const Play = ({
               src={card.imageUrl}
               alt=""
               onClick={() => {
-                setIndexSelected(index)
-                selectCard(card, index)
+                setIndexSelected(index);
+                selectCard(card, "hand", index);
               }}
               // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
               // onMouseLeave={() => setHoverImage("")}
@@ -373,20 +473,23 @@ const Play = ({
                 src={card.pkmn.imageUrl}
                 alt=""
                 onClick={() => {
-                  setIndexSelected(index)
-                  selectCard(card.pkmn, "benchPkmn", index)
+                  setIndexSelected(index);
+                  selectCard(card.pkmn, "benchPkmn", index);
                 }}
-                // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
-                // onMouseLeave={() => setHoverImage("")}
               />
               {card.energies &&
-                card.energies.map((energy, index) => (
+                card.energies.map((energy, energyIndex) => (
                   <img
                     className="attached-energy"
-                    style={{ left: (index + 1) * 10, zIndex: (index + 1) * -5 }}
+                    style={{
+                      left: (energyIndex + 1) * 10,
+                      zIndex: (energyIndex + 1) * -5,
+                    }}
                     width="60px"
                     src={energy.imageUrl}
-                    onClick={() => selectCard(energy, "energy", index)}
+                    onClick={() =>
+                      selectCard(energy, "energyBench", index, energyIndex)
+                    }
                   />
                 ))}
             </div>
@@ -398,13 +501,18 @@ const Play = ({
         {activePkmn && (
           <div>
             {activePkmn.energies &&
-              activePkmn.energies.map((energy, index) => (
+              activePkmn.energies.map((energy, energyIndex) => (
                 <img
                   className="attached-energy"
-                  style={{ left: (index + 1) * 15, zIndex: (index + 1) * -5 }}
+                  style={{
+                    left: (energyIndex + 1) * 15,
+                    zIndex: (energyIndex + 1) * -5,
+                  }}
                   width="100%"
                   src={energy.imageUrl}
-                  onClick={() => selectCard(energy, "energy", index)}
+                  onClick={() =>
+                    selectCard(energy, "energyActive", 0, energyIndex)
+                  }
                 />
               ))}
             <img
@@ -412,10 +520,7 @@ const Play = ({
               style={{ zIndex: 50 }}
               src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
               alt=""
-              onClick={() => selectCard(activePkmn.pkmn, "activePkmn")}
-
-              // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
-              // onMouseLeave={() => setHoverImage("")}
+              onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
             />
           </div>
         )}
@@ -437,23 +542,31 @@ const Play = ({
             onClick={() =>
               selectCard(discardedPkmn[0], "discardedPkmn", "discardPile")
             }
-            // onMouseEnter={() => setHoverImage(activePkmn.imageUrl)}
-            // onMouseLeave={() => setHoverImage("")}
           />
         )}
       </div>
-      <div className="side-panel">
-        <SidePanel
-          card={selectedCard}
-          index={indexSelected}
-          setActive={addActivePkmn}
-          setBench={addBenchPkmn}
-          setDiscard={discard}
-          setSwitch={switchPkmn}
-          setEnergy={attachEnergy}
-          // hoverImage={hoverImage}
-        />
-      </div>
+      <>
+        <div className="side-panel">
+          <SidePanel
+            card={selectedCard}
+            index={indexSelected}
+            setActive={addActivePkmn}
+            setBench={addBenchPkmn}
+            setDiscard={discard}
+            setSwitch={switchPkmn}
+            setEnergy={attachEnergy}
+            isActive={activePkmn.pkmn}
+            returnToHand={removeAndAddToHand}
+            // hoverImage={hoverImage}
+          />
+        </div>
+        <div className="btn-group">
+          <button onClick={restart}>Restart</button>
+          <button onClick={createGame}>Create Game</button>
+          <button onClick={shuffle}>Shuffle</button>
+          <button onClick={draw}>Draw</button>
+        </div>
+      </>
       <img
         id="card-back-img"
         draggable="false"
@@ -461,15 +574,10 @@ const Play = ({
         alt="pokecard"
         width="100px"
       />
-      <button onClick={restart}>Restart</button>
-      <button>Set Active Pkmn</button>
-      <button onClick={createGame}>Create Game</button>
-      <button onClick={shuffle}>Shuffle</button>
-      <button onClick={draw}>Draw</button>
 
-      <div className="hand-div">
-        <ul className="list" id="hand-ul">
-          {hand.map((card, index) => (
+      {/* <div className="hand-div">
+        <ul className="list" id="hand-ul"> */}
+      {/* {hand.map((card, index) => (
             // <Draggable>
             // <PlayCard
             //   index={index}
@@ -490,19 +598,19 @@ const Play = ({
                 width="100px"
               />
               {/* <button onClick={() => playActivePkmn(card)}>Set Active Pkmn</button> */}
-            </li>
-            // </Draggable>
-          ))}
-        </ul>
-      </div>
+      {/* </li> */}
+      {/* // </Draggable> */}
+      {/* ))} */}
+      {/* </ul>
+      </div> */}
     </div>
-  )
-}
+  );
+};
 
 Play.propTypes = {
   getDeck: PropTypes.func.isRequired,
   getAllDecks: PropTypes.func.isRequired,
-}
+};
 
 const mapStateToProps = (state) => ({
   deck: state.deck.deck,
@@ -510,6 +618,6 @@ const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
   decks: state.deck.decks,
   decksLoading: state.deck.decksLoading,
-})
+});
 
-export default connect(mapStateToProps, { getDeck, getAllDecks })(Play)
+export default connect(mapStateToProps, { getDeck, getAllDecks })(Play);

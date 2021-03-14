@@ -1,5 +1,5 @@
-import React from "react"
-import { pokeCardBack } from "../constants/images"
+import React from "react";
+import { pokeCardBack } from "../constants/images";
 
 // what props this will take
 const SidePanel = ({
@@ -11,49 +11,86 @@ const SidePanel = ({
   setSwitch,
   setDiscard,
   setEnergy,
+  isActive,
+  returnToHand,
 }) => {
-  //   console.log(card)
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
+  console.log(card.nestedIndex);
+
   const pokemon = (
-    <div className="btn-group">
-      <button onClick={() => setActive(card)}>Active Pkmn</button>
-      <button onClick={() => setBench(card)}>Bench</button>
-      <button onClick={() => setSwitch(index)}>Switch</button>
-      <button onClick={() => setDiscard(card)}>Discard</button>
-    </div>
-  )
+    <>
+      {!isActive && (
+        <button onClick={() => setActive(card.card)}>Active Pkmn</button>
+      )}
+      {card.location === "hand" && (
+        <button onClick={() => setBench(card.card, card.location, card.index)}>
+          Bench
+        </button>
+      )}
+      {card.location === "benchPkmn" && (
+        <button onClick={() => setSwitch(index)}>Switch with Active</button>
+      )}
+      <button onClick={() => setDiscard(card.card, card.location, card.index)}>
+        Discard
+      </button>
+    </>
+  );
 
   const energy = (
-    <div className="btn-group">
-      <button onClick={() => setEnergy(card, index)}>Attach to Pkmn</button>
-      <button>Discard</button>
-    </div>
-  )
+    <>
+      <button onClick={() => setEnergy(card.card, index)}>
+        Attach to Pkmn
+      </button>
+      <button
+        onClick={() =>
+          setDiscard(card.card, card.location, card.index, card.nestedIndex)
+        }
+      >
+        Discard
+      </button>
+    </>
+  );
 
   const cardTypes = () => {
-    switch (card.supertype) {
+    switch (card.card?.supertype) {
       case "Pokémon":
-        return pokemon
+        return pokemon;
       case "Energy":
-        return energy
+        return energy;
       default:
-        break
+        break;
     }
-  }
+  };
 
   return (
     <div className="side-panel-container">
       <div className="pokecard-back">
         <img
           width="100%"
-          src={card.imageUrl ? card.imageUrl : pokeCardBack}
-          alt={card.name}
+          src={card.card?.imageUrl ? card.card.imageUrl : pokeCardBack}
+          alt={card.card?.name}
         />
       </div>
-      {cardTypes()}
+      <div className="btn-group">
+        {cardTypes()}
+        {card.location !== "hand" && (
+          <button
+            onClick={() =>
+              returnToHand(
+                card.card,
+                card.location,
+                card.index,
+                card.nestedIndex
+              )
+            }
+          >
+            Return to Hand
+          </button>
+        )}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default SidePanel
+export default SidePanel;
