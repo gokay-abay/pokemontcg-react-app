@@ -37,7 +37,6 @@ export default function TransitionsModal({
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [selectedCards, setSelectedCards] = useState([]);
-  console.log(location);
 
   useEffect(() => {
     setOpen(clicked);

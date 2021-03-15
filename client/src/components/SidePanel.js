@@ -17,7 +17,6 @@ const SidePanel = ({
 }) => {
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
-  console.log(card.nestedIndex);
 
   const pokemon = (
     <>

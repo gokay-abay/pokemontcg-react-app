@@ -1,22 +1,22 @@
-const express = require("express")
-const connectDB = require("./config/db")
-const cors = require("cors")
-const path = require("path")
+const express = require("express");
+const connectDB = require("./config/db");
+const cors = require("cors");
+const path = require("path");
 const io = require("socket.io")({
   cors: {
     origin: "*",
   },
-})
+});
 
-const app = express()
+const app = express();
 
 // Connect Database
-connectDB()
+connectDB();
 
 // cors middleware
-app.use(cors())
+app.use(cors());
 // Init Middleware
-app.use(express.json({ extended: false }))
+app.use(express.json({ extended: false }));
 
 // Define routes
 
@@ -73,47 +73,51 @@ app.use(express.json({ extended: false }))
 
 // on connection emit the socket id so that client knows what to render
 io.on("connection", (socket) => {
-  console.log(`Socket ${socket.id} connected`)
+  console.log(`Socket ${socket.id} connected`);
 
   // on create event send the socket id to the client
   socket.on("createGame", () => {
-    io.emit("resSocketId", socket.id)
-  })
+    io.emit("resSocketId", socket.id);
+  });
 
   socket.on("activePkmn", (card) => {
-    socket.broadcast.emit("backActivePkmn", card)
-  })
+    socket.broadcast.emit("backActivePkmn", card);
+  });
+
+  socket.on("benchPkmn", (cardArray) => {
+    socket.broadcast.emit("backBenchPkmn", cardArray);
+  });
   // socket.on("activePkmn", (card, socketId) => {
   //   io.emit("backActivePkmn", (card, socketId))
   // })
-})
+});
 
 // io.on("activePkmn", (socket) => {
 //   socket.emit("activePkmn", socket)
 // })
 
-app.use("/api/auth", require("./routes/api/auth"))
-app.use("/api/users", require("./routes/api/users"))
-app.use("/api/decks", require("./routes/api/decks"))
+app.use("/api/auth", require("./routes/api/auth"));
+app.use("/api/users", require("./routes/api/users"));
+app.use("/api/decks", require("./routes/api/decks"));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
   // Set Static folder
-  app.use(express.static("client/build"))
+  app.use(express.static("client/build"));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
-  })
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
 }
 
 // import the Search class and the fetch api method
 // port
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 4000;
 
 // create server
 const server = app.listen(PORT, () =>
   console.log(`Server is running on port ${PORT}`)
-)
+);
 
 // listen server with io
-io.listen(server)
+io.listen(server);
