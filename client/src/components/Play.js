@@ -14,7 +14,8 @@ import { pokeCardBack } from "../constants/images";
 import Modal from "./Modal";
 import Slider from "react-slick";
 
-const socket = io("http://localhost:4000/");
+// const socket = io("http://localhost:4000/");
+const socket = io("https://gentle-brushlands-61970.herokuapp.com");
 
 const Play = ({
   getAllDecks,
