@@ -6,6 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "jquery";
 import "popper.js";
 import "bootstrap/dist/js/bootstrap";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

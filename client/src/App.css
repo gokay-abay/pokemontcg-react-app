@@ -284,6 +284,11 @@ PLACEHOLDER
   position: absolute;
 }
 
+.slick-prev:before,
+.slick-next:before {
+  color: blue !important;
+}
+
 @media only screen and (max-width: 768px) {
   .list {
     justify-content: center;

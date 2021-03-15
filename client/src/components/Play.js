@@ -11,9 +11,8 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import PlayCard from "./PlayCard";
 import SidePanel from "./SidePanel";
 import { pokeCardBack } from "../constants/images";
-
-// MATERIAL UI
-import Modal from "@material-ui/core/Modal";
+import Modal from "./Modal";
+import Slider from "react-slick";
 
 const socket = io("http://localhost:4000/");
 
@@ -278,11 +277,22 @@ const Play = ({
   };
 
   const removeEnergyActive = (energyIndex) => {
-    console.log(energyIndex);
     let active = activePkmn;
     const removedEnergy = active.energies.splice(energyIndex, 1);
     setActivePkmn(active);
     return removedEnergy;
+  };
+
+  const removeFromDeck = (index) => {
+    let copyDeck = localDeck.cards;
+    const removedCard = copyDeck.splice(index, 1);
+    setLocalDeck((prevState) => {
+      return {
+        ...prevState,
+        cards: copyDeck,
+      };
+    });
+    return removedCard;
   };
 
   const returnToHand = (card, location, index, energyIndex) => {
@@ -320,10 +330,51 @@ const Play = ({
     });
   };
 
-  const pickCardFromDeck = () => {
+  const [modalCards, setModalCards] = useState([]);
+  const [modalLocation, setModalLocation] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pickedModal, setPickedModal] = useState([]);
+
+  const modalClicked = (location) => {
+    if (location === "deck") {
+      setModalCards(localDeck.cards);
+      setModalLocation("deck");
+    } else if (location === "discard") {
+      setModalCards(discardedPkmn);
+      setModalLocation("discard");
+    }
+    setModalOpen(true);
+  };
+
+  const addToHandRemoveFromDeck = (cards) => {
     // look at the cards inside the deck and pick cards
     // Opens up a modal that shows the cards in the deck
     // each card can be clicked to return to hand
+    let copyHand = hand;
+
+    if (modalLocation === "deck") {
+      let copyDeck = localDeck.cards;
+      cards.forEach((card) => {
+        hand.push(card.card);
+        const removedCards = copyDeck.splice(card.index, 1);
+        console.log(removedCards);
+      });
+
+      setLocalDeck((prevState) => {
+        return {
+          ...prevState,
+          cards: copyDeck,
+        };
+      });
+    } else if (modalLocation === "discard") {
+      let copyDiscard = discardedPkmn;
+      cards.forEach((card) => {
+        hand.push(card.card);
+        const removedCards = copyDiscard.splice(card.index, 1);
+      });
+      setDiscardedPkmn(copyDiscard);
+    }
+    setHand(copyHand);
   };
 
   const retrieveCardFromDiscard = () => {
@@ -373,6 +424,10 @@ const Play = ({
 
   const restart = () => {
     setHand([]);
+    setDiscardedPkmn([]);
+    setActivePkmn({});
+    setBenchPkmn([]);
+    setSelectedCard({});
     setZValue(1);
     getDeck(localDeck.id);
   };
@@ -454,6 +509,15 @@ const Play = ({
         </select>
         <input className="btn btn-primary" type="submit" value="Select" />
       </form> */}
+        <Modal
+          clicked={modalOpen}
+          cards={modalCards}
+          close={() => setModalOpen(false)}
+          location={modalLocation}
+          addToHand={(cards) => {
+            addToHandRemoveFromDeck(cards);
+          }}
+        />
         <div className="hand-placeholder">
           {hand &&
             hand.map((card, index) => (
@@ -547,19 +611,20 @@ const Play = ({
               width="80px"
               src={discardedPkmn[0].imageUrl}
               alt=""
-              onClick={() =>
-                selectCard(discardedPkmn[0], "discardedPkmn", "discardPile")
-              }
+              onClick={() => {
+                selectCard(discardedPkmn[0], "discardedPkmn", "discardPile");
+                modalClicked("discard");
+              }}
             />
           )}
         </div>
-
         <img
           id="card-back-img"
           draggable="false"
           src={pokeCardBack}
           alt="pokecard"
           width="100px"
+          onClick={() => modalClicked("deck")}
         />
 
         {/* <div className="hand-div">
