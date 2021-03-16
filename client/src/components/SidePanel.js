@@ -23,7 +23,7 @@ const SidePanel = ({
     <>
       {card.card.subtype === "Basic" ? (
         <>
-          {!isActive && (
+          {!isActive && card.location === "hand" && (
             <button
               class="btn btn-light"
               onClick={() => setActive(card.card, card.location, card.index)}
@@ -42,14 +42,21 @@ const SidePanel = ({
         </>
       ) : (
         <>
-          <button
-            class="btn btn-light"
-            onClick={() =>
-              setEvolve(card.card, card.location, card.index, card.nestedIndex)
-            }
-          >
-            Evolve
-          </button>
+          {card.location === "hand" && (
+            <button
+              class="btn btn-light"
+              onClick={() =>
+                setEvolve(
+                  card.card,
+                  card.location,
+                  card.index,
+                  card.nestedIndex
+                )
+              }
+            >
+              Evolve
+            </button>
+          )}
         </>
       )}
       {card.location ===

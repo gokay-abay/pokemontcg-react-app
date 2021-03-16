@@ -15,8 +15,8 @@ import Modal from "./Modal";
 import Slider from "react-slick";
 import { set } from "mongoose";
 
-const socket = io("http://localhost:4000/");
-// const socket = io("https://gentle-brushlands-61970.herokuapp.com");
+// const socket = io("http://localhost:4000/");
+const socket = io("https://gentle-brushlands-61970.herokuapp.com");
 
 const Play = ({
   getAllDecks,
@@ -208,13 +208,14 @@ const Play = ({
               evolution: copyEvolution,
             };
           });
+          socket.emit("activePkmn", activePkmn);
           break;
         case "benchPkmn":
         case "evolutionBench":
           let copyBench = benchPkmn;
           copyBench[index].evolution.push(evolutionCard.card);
           setBenchPkmn(copyBench);
-          // socket.emit("benchPkmn", benchPkmn);
+          socket.emit("benchPkmn", benchPkmn);
           break;
         default:
           return;
@@ -245,6 +246,7 @@ const Play = ({
       ...benchPkmn,
       { pkmn: card[0], energies: [], evolution: [] },
     ]);
+    socket.emit("benchPkmn", benchPkmn);
   };
 
   const switchPkmn = (index) => {
@@ -254,9 +256,12 @@ const Play = ({
 
     setActivePkmn(benchSelected);
     copyBench.splice(index, 1);
-    copyBench.push(activeSelected);
+    if (activeSelected.pkmn) {
+      copyBench.push(activeSelected);
+    }
     setBenchPkmn(copyBench);
     socket.emit("benchPkmn", benchPkmn);
+    socket.emit("activePkmn", activePkmn);
   };
 
   const attachEnergy = (card, index) => {
@@ -323,6 +328,7 @@ const Play = ({
       pkmn: "",
       energies: [],
     });
+    socket.emit("activePkmn", activePkmn);
     return [copyActive.pkmn, ...copyActive.energies];
   };
 
@@ -337,6 +343,7 @@ const Play = ({
     let copyBench = benchPkmn;
     const removedCards = copyBench.splice(index, 1);
     setBenchPkmn(copyBench);
+    socket.emit("benchPkmn", benchPkmn);
     return [removedCards[0].pkmn, ...removedCards[0].energies];
   };
 
@@ -349,6 +356,7 @@ const Play = ({
     let copyBench = benchPkmn;
     const removedEnergy = copyBench[index].energies.splice(energyIndex, 1);
     setBenchPkmn(copyBench);
+    socket.emit("benchPkmn", benchPkmn);
     return removedEnergy;
   };
 
@@ -356,6 +364,7 @@ const Play = ({
     let active = activePkmn;
     const removedEnergy = active.energies.splice(energyIndex, 1);
     setActivePkmn(active);
+    socket.emit("activePkmn", activePkmn);
     return removedEnergy;
   };
 
@@ -364,6 +373,7 @@ const Play = ({
     let active = activePkmn;
     const removedEvo = active.evolution.splice(evolutionIndex, 1);
     setActivePkmn(active);
+    socket.emit("activePkmn", activePkmn);
     return removedEvo;
   };
 
@@ -372,6 +382,7 @@ const Play = ({
     let copyBench = benchPkmn;
     const removedEvo = copyBench[index].evolution.splice(evolutionIndex, 1);
     setBenchPkmn(copyBench);
+    socket.emit("benchPkmn", benchPkmn);
     return removedEvo;
   };
 
@@ -732,13 +743,33 @@ const Play = ({
                 onClick={() => selectCard(energy, "opponent", 0, energyIndex)}
               />
             ))}
-          <img
-            src={oppLoaded ? oppActive.pkmn?.imageUrl : ""}
-            width="100px"
-            style={{ zIndex: 50 }}
-            alt=""
-            onClick={() => selectCard(activePkmn.pkmn, "opponent", 0)}
-          />
+          {oppActive.evolution?.length > 0 ? (
+            <img
+              width="100px"
+              style={{ zIndex: 50 }}
+              src={
+                oppActive.evolution.length > 0 &&
+                oppActive.evolution[oppActive.evolution.length - 1]?.imageUrl
+              }
+              alt=""
+              onClick={() =>
+                selectCard(
+                  oppActive.evolution[oppActive.evolution.length - 1],
+                  "opponent",
+                  0,
+                  oppActive.evolution.length - 1
+                )
+              }
+            />
+          ) : (
+            <img
+              src={oppLoaded ? oppActive.pkmn?.imageUrl : ""}
+              width="100px"
+              style={{ zIndex: 50 }}
+              alt=""
+              onClick={() => selectCard(activePkmn.pkmn, "opponent", 0)}
+            />
+          )}
         </div>
 
         {/* OPPONENT BENCH */}
@@ -746,15 +777,33 @@ const Play = ({
           {oppBench &&
             oppBench.map((card, index) => (
               <div style={{ position: "relative", margin: 20 }}>
-                <img
-                  key={index}
-                  width="60px"
-                  src={card.pkmn.imageUrl}
-                  alt=""
-                  onClick={() => {
-                    selectCard(card.pkmn, "opponent", index);
-                  }}
-                />
+                {card.evolution?.length > 0 ? (
+                  <img
+                    key={index}
+                    width="60px"
+                    src={card.evolution[card.evolution.length - 1].imageUrl}
+                    alt=""
+                    onClick={() => {
+                      setIndexSelected(index);
+                      selectCard(
+                        card.evolution[card.evolution.length - 1],
+                        "opponent",
+                        index,
+                        card.evolution.length - 1
+                      );
+                    }}
+                  />
+                ) : (
+                  <img
+                    key={index}
+                    width="60px"
+                    src={card.pkmn.imageUrl}
+                    alt=""
+                    onClick={() => {
+                      selectCard(card.pkmn, "opponent", index);
+                    }}
+                  />
+                )}
                 {card.energies &&
                   card.energies.map((energy, energyIndex) => (
                     <img
