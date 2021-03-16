@@ -14,8 +14,8 @@ import { pokeCardBack } from "../constants/images";
 import Modal from "./Modal";
 import Slider from "react-slick";
 
-// const socket = io("http://localhost:4000/");
-const socket = io("https://gentle-brushlands-61970.herokuapp.com");
+const socket = io("http://localhost:4000/");
+// const socket = io("https://gentle-brushlands-61970.herokuapp.com");
 
 const Play = ({
   getAllDecks,
@@ -118,6 +118,7 @@ const Play = ({
   const [activePkmn, setActivePkmn] = useState({
     pkmn: "",
     energies: [],
+    evolution: [],
   });
   const [benchPkmn, setBenchPkmn] = useState([]);
   const [discardedPkmn, setDiscardedPkmn] = useState([]);
@@ -222,7 +223,6 @@ const Play = ({
     // when event listeners fired we can get the card and attach the energy card to it
     // we need to store the selected energy card in a comp level state
     //
-    console.log(energy);
     setEnergy({ card: card, index: index });
   };
 
@@ -508,6 +508,8 @@ const Play = ({
               />
             ))}
         </div>
+
+        {/* PLAYER BENCH */}
         <div className="bench1-placeholder">
           {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
           {benchPkmn &&
@@ -541,6 +543,8 @@ const Play = ({
               </div>
             ))}
         </div>
+
+        {/* OPPONENT BENCH */}
         <div className="bench2-placeholder">
           {oppBench &&
             oppBench.map((card, index) => (
@@ -550,10 +554,9 @@ const Play = ({
                   width="60px"
                   src={card.pkmn.imageUrl}
                   alt=""
-                  // onClick={() => {
-                  //   setIndexSelected(index);
-                  //   selectCard(card.pkmn, "benchPkmn", index);
-                  // }}
+                  onClick={() => {
+                    selectCard(card.pkmn, "opponent", index);
+                  }}
                 />
                 {card.energies &&
                   card.energies.map((energy, energyIndex) => (
@@ -565,14 +568,16 @@ const Play = ({
                       }}
                       width="60px"
                       src={energy.imageUrl}
-                      // onClick={() =>
-                      //   selectCard(energy, "energyBench", index, energyIndex)
-                      // }
+                      onClick={() =>
+                        selectCard(energy, "opponent", index, energyIndex)
+                      }
                     />
                   ))}
               </div>
             ))}
         </div>
+
+        {/* PLAYER ACTIVE */}
         <div className="active-pokemon1-placeholder">
           {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
           {activePkmn && (
@@ -602,6 +607,8 @@ const Play = ({
             </div>
           )}
         </div>
+
+        {/* OPPONENT ACTIVE */}
         <div className="active-pokemon2-placeholder">
           {oppActive.energies &&
             oppActive.energies.map((energy, energyIndex) => (
@@ -613,16 +620,15 @@ const Play = ({
                 }}
                 width="100%"
                 src={energy.imageUrl}
-                // onClick={() =>
-                //   selectCard(energy, "energyActive", 0, energyIndex)
-                // }
+                onClick={() => selectCard(energy, "opponent", 0, energyIndex)}
               />
             ))}
           <img
             src={oppLoaded ? oppActive.pkmn?.imageUrl : ""}
             width="100%"
             style={{ zIndex: 50 }}
-            // alt={card.name}
+            alt=""
+            onClick={() => selectCard(activePkmn.pkmn, "opponent", 0)}
           />
         </div>
         <div className="discard-pile-placeholder">

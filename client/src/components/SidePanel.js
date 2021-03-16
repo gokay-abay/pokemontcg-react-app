@@ -74,30 +74,39 @@ const SidePanel = ({
           alt={card.card?.name}
         />
       </div>
-      <div className="btn-group">
-        {cardTypes()}
-        {card.location !== "hand" && (
-          <button
-            onClick={() =>
-              returnToHand(
-                card.card,
-                card.location,
-                card.index,
-                card.nestedIndex
-              )
-            }
-          >
-            Return to Hand
-          </button>
-        )}
-        <button
-          onClick={() =>
-            returnToDeck(card.card, card.location, card.index, card.nestedIndex)
-          }
-        >
-          Return to Deck
-        </button>
-      </div>
+      {card.location !== "opponent" && (
+        <>
+          <div className="btn-group">
+            {cardTypes()}
+            {card.location !== "hand" && (
+              <button
+                onClick={() =>
+                  returnToHand(
+                    card.card,
+                    card.location,
+                    card.index,
+                    card.nestedIndex
+                  )
+                }
+              >
+                Return to Hand
+              </button>
+            )}
+            <button
+              onClick={() =>
+                returnToDeck(
+                  card.card,
+                  card.location,
+                  card.index,
+                  card.nestedIndex
+                )
+              }
+            >
+              Return to Deck
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
