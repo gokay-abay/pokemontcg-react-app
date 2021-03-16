@@ -121,6 +121,7 @@ const Play = ({
   const [benchPkmn, setBenchPkmn] = useState([]);
   const [discardedPkmn, setDiscardedPkmn] = useState([]);
   const [energy, setEnergy] = useState();
+  const [evolutionCard, setEvolutionCard] = useState();
 
   // ============== EVENT EMITTERS =====================================//
   useEffect(() => {
@@ -171,6 +172,7 @@ const Play = ({
     if (energy) {
       switch (location) {
         case "activePkmn":
+        case "evolutionActive":
           let copyEnergies = activePkmn.energies;
           copyEnergies.push(energy.card);
           setActivePkmn((prevState) => {
@@ -182,6 +184,7 @@ const Play = ({
           socket.emit("activePkmn", card);
           break;
         case "benchPkmn":
+        case "evolutionBench":
           let copyBench = benchPkmn;
           copyBench[index].energies.push(energy.card);
           setBenchPkmn(copyBench);
@@ -193,6 +196,31 @@ const Play = ({
       // get the card with index
       removeCardfromHand(energy.index);
       setEnergy();
+    } else if (evolutionCard) {
+      switch (location) {
+        case "activePkmn":
+        case "evolutionActive":
+          let copyEvolution = activePkmn.evolution;
+          copyEvolution.push(evolutionCard.card);
+          setActivePkmn((prevState) => {
+            return {
+              ...prevState,
+              evolution: copyEvolution,
+            };
+          });
+          break;
+        case "benchPkmn":
+        case "evolutionBench":
+          let copyBench = benchPkmn;
+          copyBench[index].evolution.push(evolutionCard.card);
+          setBenchPkmn(copyBench);
+          // socket.emit("benchPkmn", benchPkmn);
+          break;
+        default:
+          return;
+      }
+      removeCardfromHand(evolutionCard.index);
+      setEvolutionCard();
     }
   };
 
@@ -200,7 +228,7 @@ const Play = ({
   const addActivePkmn = (card, location, index) => {
     if (location === "hand") {
       card = removeCardfromHand(index);
-      setActivePkmn({ pkmn: card[0], energies: [] });
+      setActivePkmn({ pkmn: card[0], energies: [], evolution: [] });
     } else if (location === "benchPkmn") {
       card = removeFromBench(index);
       const pkmnCard = card[0];
@@ -213,7 +241,10 @@ const Play = ({
   // ADD PKMN TO BENCH
   const addBenchPkmn = (card, location, index) => {
     card = removeCardfromHand(index);
-    setBenchPkmn([...benchPkmn, { pkmn: card[0], energies: [] }]);
+    setBenchPkmn([
+      ...benchPkmn,
+      { pkmn: card[0], energies: [], evolution: [] },
+    ]);
   };
 
   const switchPkmn = (index) => {
@@ -243,6 +274,12 @@ const Play = ({
     socket.emit("trainer", trainer);
   };
 
+  const evolvePkmn = (card, location, index, nestedIndex) => {
+    // card = removeCardfromHand(index)
+    // if (location === "")
+    setEvolutionCard({ card: card, index: index });
+  };
+
   const discard = (card, location, index, energyIndex) => {
     if (location === "activePkmn") {
       setDiscardedPkmn([card, ...activePkmn.energies, ...discardedPkmn]);
@@ -265,6 +302,12 @@ const Play = ({
     } else if (location === "trainer") {
       setTrainer({});
       setDiscardedPkmn([card, ...discardedPkmn]);
+    } else if (location === "evolutionActive") {
+      card = removeEvolutionActive(energyIndex);
+      setDiscardedPkmn([...card, ...discardedPkmn]);
+    } else if (location === "evolutionBench") {
+      card = removeEvolutionBench(index, energyIndex);
+      setDiscardedPkmn([...card, ...discardedPkmn]);
     }
   };
 
@@ -316,6 +359,22 @@ const Play = ({
     return removedEnergy;
   };
 
+  const removeEvolutionActive = (evolutionIndex) => {
+    // remove evo active
+    let active = activePkmn;
+    const removedEvo = active.evolution.splice(evolutionIndex, 1);
+    setActivePkmn(active);
+    return removedEvo;
+  };
+
+  const removeEvolutionBench = (index, evolutionIndex) => {
+    // remove evo bench
+    let copyBench = benchPkmn;
+    const removedEvo = copyBench[index].evolution.splice(evolutionIndex, 1);
+    setBenchPkmn(copyBench);
+    return removedEvo;
+  };
+
   const removeFromDeck = (index) => {
     let copyDeck = localDeck.cards;
     const removedCard = copyDeck.splice(index, 1);
@@ -328,35 +387,43 @@ const Play = ({
     return removedCard;
   };
 
-  const returnToHand = (card, location, index, energyIndex) => {
+  const returnToHand = (card, location, index, nestedIndex) => {
     if (location === "benchPkmn") {
       card = removeFromBench(index);
       socket.emit("benchPkmn", benchPkmn);
     } else if (location === "activePkmn") {
       card = removeActivePkmn();
     } else if (location === "energyBench") {
-      card = removeEnergyBench(index, energyIndex);
+      card = removeEnergyBench(index, nestedIndex);
     } else if (location === "energyActive") {
-      card = removeEnergyActive(energyIndex);
+      card = removeEnergyActive(nestedIndex);
     } else if (location === "trainer") {
       card = removeTrainer(card);
+    } else if (location === "evolutionActive") {
+      card = removeEvolutionActive(nestedIndex);
+    } else if (location === "evolutionBench") {
+      card = removeEvolutionBench(index, nestedIndex);
     }
     setHand([...hand, ...card]);
   };
 
-  const returnToDeck = (card, location, index, energyIndex) => {
+  const returnToDeck = (card, location, index, nestedIndex) => {
     if (location === "benchPkmn") {
       card = removeFromBench(index);
     } else if (location === "activePkmn") {
       card = removeActivePkmn();
     } else if (location === "energyBench") {
-      card = removeEnergyBench(index, energyIndex);
+      card = removeEnergyBench(index, nestedIndex);
     } else if (location === "energyActive") {
-      card = removeEnergyActive(energyIndex);
+      card = removeEnergyActive(nestedIndex);
     } else if (location === "hand") {
       card = removeCardfromHand(index);
     } else if (location === "trainer") {
       card = removeTrainer(card);
+    } else if (location === "evolutionActive") {
+      card = removeEvolutionActive(nestedIndex);
+    } else if (location === "evolutionBench") {
+      card = removeEvolutionBench(index, nestedIndex);
     }
 
     const newDeck = [...card, ...localDeck.cards];
@@ -379,7 +446,6 @@ const Play = ({
       cards.forEach((card) => {
         hand.push(card.card);
         const removedCards = copyDeck.splice(card.index, 1);
-        console.log(removedCards);
       });
 
       setLocalDeck((prevState) => {
@@ -494,6 +560,7 @@ const Play = ({
           card={selectedCard}
           index={indexSelected}
           setActive={addActivePkmn}
+          setEvolve={evolvePkmn}
           setBench={addBenchPkmn}
           setTrainer={playTrainer}
           setDiscard={discard}
@@ -555,13 +622,34 @@ const Play = ({
                     }
                   />
                 ))}
-              <img
-                width="100px"
-                style={{ zIndex: 50 }}
-                src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
-                alt=""
-                onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
-              />
+              {activePkmn.evolution?.length > 0 ? (
+                <img
+                  width="100px"
+                  style={{ zIndex: 50 }}
+                  src={
+                    activePkmn.evolution.length > 0 &&
+                    activePkmn.evolution[activePkmn.evolution.length - 1]
+                      ?.imageUrl
+                  }
+                  alt=""
+                  onClick={() =>
+                    selectCard(
+                      activePkmn.evolution[activePkmn.evolution.length - 1],
+                      "evolutionActive",
+                      0,
+                      activePkmn.evolution.length - 1
+                    )
+                  }
+                />
+              ) : (
+                <img
+                  width="100px"
+                  style={{ zIndex: 50 }}
+                  src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
+                  alt=""
+                  onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
+                />
+              )}
             </div>
           )}
         </div>
@@ -572,16 +660,34 @@ const Play = ({
           {benchPkmn &&
             benchPkmn.map((card, index) => (
               <div style={{ position: "relative", margin: 20 }}>
-                <img
-                  key={index}
-                  width="60px"
-                  src={card.pkmn.imageUrl}
-                  alt=""
-                  onClick={() => {
-                    setIndexSelected(index);
-                    selectCard(card.pkmn, "benchPkmn", index);
-                  }}
-                />
+                {card.evolution?.length > 0 ? (
+                  <img
+                    key={index}
+                    width="60px"
+                    src={card.evolution[card.evolution.length - 1].imageUrl}
+                    alt=""
+                    onClick={() => {
+                      setIndexSelected(index);
+                      selectCard(
+                        card.evolution[card.evolution.length - 1],
+                        "evolutionBench",
+                        index,
+                        card.evolution.length - 1
+                      );
+                    }}
+                  />
+                ) : (
+                  <img
+                    key={index}
+                    width="60px"
+                    src={card.pkmn.imageUrl}
+                    alt=""
+                    onClick={() => {
+                      setIndexSelected(index);
+                      selectCard(card.pkmn, "benchPkmn", index);
+                    }}
+                  />
+                )}
                 {card.energies &&
                   card.energies.map((energy, energyIndex) => (
                     <img

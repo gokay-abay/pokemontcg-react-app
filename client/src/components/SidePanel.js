@@ -6,6 +6,7 @@ const SidePanel = ({
   card,
   index,
   setActive,
+  setEvolve,
   setBench,
   setTrainer,
   setSwitch,
@@ -20,23 +21,39 @@ const SidePanel = ({
 
   const pokemon = (
     <>
-      {!isActive && (
-        <button
-          class="btn btn-light"
-          onClick={() => setActive(card.card, card.location, card.index)}
-        >
-          Active Pkmn
-        </button>
+      {card.card.subtype === "Basic" ? (
+        <>
+          {!isActive && (
+            <button
+              class="btn btn-light"
+              onClick={() => setActive(card.card, card.location, card.index)}
+            >
+              Active Pkmn
+            </button>
+          )}
+          {card.location === "hand" && (
+            <button
+              class="btn btn-light"
+              onClick={() => setBench(card.card, card.location, card.index)}
+            >
+              Bench
+            </button>
+          )}
+        </>
+      ) : (
+        <>
+          <button
+            class="btn btn-light"
+            onClick={() =>
+              setEvolve(card.card, card.location, card.index, card.nestedIndex)
+            }
+          >
+            Evolve
+          </button>
+        </>
       )}
-      {card.location === "hand" && (
-        <button
-          class="btn btn-light"
-          onClick={() => setBench(card.card, card.location, card.index)}
-        >
-          Bench
-        </button>
-      )}
-      {card.location === "benchPkmn" && (
+      {card.location ===
+        (card.location === "benchPkmn" ? "benchPkmn" : "evolutionBench") && (
         <button class="btn btn-light" onClick={() => setSwitch(index)}>
           Switch with Active
         </button>
