@@ -21,19 +21,30 @@ const SidePanel = ({
   const pokemon = (
     <>
       {!isActive && (
-        <button onClick={() => setActive(card.card, card.location, card.index)}>
+        <button
+          class="btn btn-light"
+          onClick={() => setActive(card.card, card.location, card.index)}
+        >
           Active Pkmn
         </button>
       )}
       {card.location === "hand" && (
-        <button onClick={() => setBench(card.card, card.location, card.index)}>
+        <button
+          class="btn btn-light"
+          onClick={() => setBench(card.card, card.location, card.index)}
+        >
           Bench
         </button>
       )}
       {card.location === "benchPkmn" && (
-        <button onClick={() => setSwitch(index)}>Switch with Active</button>
+        <button class="btn btn-light" onClick={() => setSwitch(index)}>
+          Switch with Active
+        </button>
       )}
-      <button onClick={() => setDiscard(card.card, card.location, card.index)}>
+      <button
+        class="btn btn-light"
+        onClick={() => setDiscard(card.card, card.location, card.index)}
+      >
         Discard
       </button>
     </>
@@ -41,10 +52,11 @@ const SidePanel = ({
 
   const energy = (
     <>
-      <button onClick={() => setEnergy(card.card, index)}>
+      <button class="btn btn-light" onClick={() => setEnergy(card.card, index)}>
         Attach to Pkmn
       </button>
       <button
+        class="btn btn-light"
         onClick={() =>
           setDiscard(card.card, card.location, card.index, card.nestedIndex)
         }
@@ -56,8 +68,14 @@ const SidePanel = ({
 
   const trainer = (
     <>
-      <button onClick={() => setTrainer(card.card, card.index)}>Play</button>
       <button
+        class="btn btn-light"
+        onClick={() => setTrainer(card.card, card.index)}
+      >
+        Play
+      </button>
+      <button
+        class="btn btn-light"
         onClick={() =>
           setDiscard(card.card, card.location, card.index, card.nestedIndex)
         }
@@ -95,6 +113,7 @@ const SidePanel = ({
             {cardTypes()}
             {card.location !== "hand" && (
               <button
+                class="btn btn-light"
                 onClick={() =>
                   returnToHand(
                     card.card,
@@ -108,6 +127,7 @@ const SidePanel = ({
               </button>
             )}
             <button
+              class="btn btn-light"
               onClick={() =>
                 returnToDeck(
                   card.card,

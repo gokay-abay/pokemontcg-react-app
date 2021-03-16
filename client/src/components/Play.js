@@ -13,6 +13,7 @@ import SidePanel from "./SidePanel";
 import { pokeCardBack } from "../constants/images";
 import Modal from "./Modal";
 import Slider from "react-slick";
+import { set } from "mongoose";
 
 const socket = io("http://localhost:4000/");
 // const socket = io("https://gentle-brushlands-61970.herokuapp.com");
@@ -199,10 +200,13 @@ const Play = ({
   const addActivePkmn = (card, location, index) => {
     if (location === "hand") {
       card = removeCardfromHand(index);
+      setActivePkmn({ pkmn: card[0], energies: [] });
     } else if (location === "benchPkmn") {
       card = removeFromBench(index);
+      const pkmnCard = card[0];
+      card.shift();
+      setActivePkmn({ pkmn: pkmnCard, energies: card });
     }
-    setActivePkmn({ pkmn: card[0], energies: [] });
     // socket.emit("activePkmn", card);
   };
 
@@ -258,6 +262,9 @@ const Play = ({
     } else if (location === "energyActive") {
       removeEnergyActive(energyIndex);
       setDiscardedPkmn([card, ...discardedPkmn]);
+    } else if (location === "trainer") {
+      setTrainer({});
+      setDiscardedPkmn([card, ...discardedPkmn]);
     }
   };
 
@@ -288,6 +295,11 @@ const Play = ({
     const removedCards = copyBench.splice(index, 1);
     setBenchPkmn(copyBench);
     return [removedCards[0].pkmn, ...removedCards[0].energies];
+  };
+
+  const removeTrainer = (card) => {
+    setTrainer({});
+    return [card];
   };
 
   const removeEnergyBench = (index, energyIndex) => {
@@ -326,6 +338,8 @@ const Play = ({
       card = removeEnergyBench(index, energyIndex);
     } else if (location === "energyActive") {
       card = removeEnergyActive(energyIndex);
+    } else if (location === "trainer") {
+      card = removeTrainer(card);
     }
     setHand([...hand, ...card]);
   };
@@ -341,6 +355,8 @@ const Play = ({
       card = removeEnergyActive(energyIndex);
     } else if (location === "hand") {
       card = removeCardfromHand(index);
+    } else if (location === "trainer") {
+      card = removeTrainer(card);
     }
 
     const newDeck = [...card, ...localDeck.cards];
@@ -445,6 +461,7 @@ const Play = ({
     setDiscardedPkmn([]);
     setActivePkmn({});
     setBenchPkmn([]);
+    setTrainer({});
     setSelectedCard({});
     setZValue(1);
     getDeck(localDeck.id);
@@ -531,7 +548,7 @@ const Play = ({
                       left: (energyIndex + 1) * 15,
                       zIndex: (energyIndex + 1) * -5,
                     }}
-                    width="100%"
+                    width="100px"
                     src={energy.imageUrl}
                     onClick={() =>
                       selectCard(energy, "energyActive", 0, energyIndex)
@@ -539,7 +556,7 @@ const Play = ({
                   />
                 ))}
               <img
-                width="100%"
+                width="100px"
                 style={{ zIndex: 50 }}
                 src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
                 alt=""
@@ -587,7 +604,7 @@ const Play = ({
         {/* PLAYER TRAINER */}
         <div className="player-trainer-container">
           <img
-            width="100%"
+            width="80px"
             src={trainer && trainer.imageUrl}
             alt=""
             onClick={() => selectCard(trainer, "trainer", 0)}
@@ -604,14 +621,14 @@ const Play = ({
                   left: (energyIndex + 1) * 15,
                   zIndex: (energyIndex + 1) * -5,
                 }}
-                width="100%"
+                width="100px"
                 src={energy.imageUrl}
                 onClick={() => selectCard(energy, "opponent", 0, energyIndex)}
               />
             ))}
           <img
             src={oppLoaded ? oppActive.pkmn?.imageUrl : ""}
-            width="100%"
+            width="100px"
             style={{ zIndex: 50 }}
             alt=""
             onClick={() => selectCard(activePkmn.pkmn, "opponent", 0)}
@@ -653,7 +670,7 @@ const Play = ({
 
         <div className="opponent-trainer-container">
           <img
-            width="100%"
+            width="80px"
             src={oppTrainer && oppTrainer.imageUrl}
             alt=""
             onClick={() => selectCard(trainer, "opponent", 0)}

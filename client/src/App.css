@@ -121,7 +121,7 @@
   /* position: absolute; */
   background-color: brown;
   height: 85vh;
-  width: 200px;
+  width: 300px;
 }
 .side-panel-container {
   height: 100%;
@@ -138,6 +138,9 @@
   width: 100%;
 }
 
+.btn-group .btn {
+  margin: 5px 0;
+}
 /* img:hover {
   position: absolute;
   top: 0;
