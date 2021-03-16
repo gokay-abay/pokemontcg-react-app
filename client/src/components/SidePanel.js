@@ -6,8 +6,8 @@ const SidePanel = ({
   card,
   index,
   setActive,
-  hoverImage,
   setBench,
+  setTrainer,
   setSwitch,
   setDiscard,
   setEnergy,
@@ -54,12 +54,27 @@ const SidePanel = ({
     </>
   );
 
+  const trainer = (
+    <>
+      <button onClick={() => setTrainer(card.card, card.index)}>Play</button>
+      <button
+        onClick={() =>
+          setDiscard(card.card, card.location, card.index, card.nestedIndex)
+        }
+      >
+        Discard
+      </button>
+    </>
+  );
+
   const cardTypes = () => {
     switch (card.card?.supertype) {
       case "Pokémon":
         return pokemon;
       case "Energy":
         return energy;
+      case "Trainer":
+        return trainer;
       default:
         break;
     }

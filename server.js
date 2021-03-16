@@ -87,6 +87,10 @@ io.on("connection", (socket) => {
   socket.on("benchPkmn", (cardArray) => {
     socket.broadcast.emit("backBenchPkmn", cardArray);
   });
+
+  socket.on("trainer", (card) => {
+    socket.broadcast.emit("backTrainer", card);
+  });
   // socket.on("activePkmn", (card, socketId) => {
   //   io.emit("backActivePkmn", (card, socketId))
   // })

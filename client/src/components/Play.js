@@ -45,8 +45,8 @@ const Play = ({
 
   const [oppActive, setOppActive] = useState("");
   const [oppLoaded, setOppLoaded] = useState(false);
-
   const [oppBench, setOppBench] = useState([]);
+  const [oppTrainer, setOppTrainer] = useState({});
 
   const [socketId, setSocketId] = useState("");
 
@@ -88,10 +88,6 @@ const Play = ({
     socket.emit("createGame");
   };
 
-  // ==================== SOCKET IO ACTIVE PKMN SET =========================
-
-  // ====================  ========================= =========================
-
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!deckLoading) {
@@ -120,11 +116,12 @@ const Play = ({
     energies: [],
     evolution: [],
   });
+  const [trainer, setTrainer] = useState({});
   const [benchPkmn, setBenchPkmn] = useState([]);
   const [discardedPkmn, setDiscardedPkmn] = useState([]);
   const [energy, setEnergy] = useState();
 
-  // ============== SOCKETS ===================//
+  // ============== EVENT EMITTERS =====================================//
   useEffect(() => {
     let mounted = true;
     socket.emit("activePkmn", activePkmn);
@@ -142,13 +139,24 @@ const Play = ({
   useEffect(() => {
     let mounted = true;
     socket.emit("benchPkmn", benchPkmn);
-    console.log(benchPkmn);
     socket.on("backBenchPkmn", (cardArray) => {
       if (mounted) {
         setOppBench(cardArray);
       }
     });
   }, [benchPkmn]);
+
+  useEffect(() => {
+    let mounted = true;
+    socket.emit("trainer", trainer);
+    socket.on("backTrainer", (card) => {
+      if (mounted) {
+        setOppTrainer(card);
+      }
+    });
+  }, [trainer]);
+
+  // ===========================================================//
 
   // console.log(selectedCard)
   // selected card can have a type
@@ -204,7 +212,6 @@ const Play = ({
     setBenchPkmn([...benchPkmn, { pkmn: card[0], energies: [] }]);
   };
 
-  // SWITCH PKMN
   const switchPkmn = (index) => {
     let copyBench = benchPkmn;
     let benchSelected = benchPkmn[index];
@@ -226,7 +233,12 @@ const Play = ({
     setEnergy({ card: card, index: index });
   };
 
-  // DISCARD A CARD
+  const playTrainer = (card, index) => {
+    card = removeCardfromHand(index);
+    setTrainer(...card);
+    socket.emit("trainer", trainer);
+  };
+
   const discard = (card, location, index, energyIndex) => {
     if (location === "activePkmn") {
       setDiscardedPkmn([card, ...activePkmn.energies, ...discardedPkmn]);
@@ -340,22 +352,6 @@ const Play = ({
     });
   };
 
-  const [modalCards, setModalCards] = useState([]);
-  const [modalLocation, setModalLocation] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [pickedModal, setPickedModal] = useState([]);
-
-  const modalClicked = (location) => {
-    if (location === "deck") {
-      setModalCards(localDeck.cards);
-      setModalLocation("deck");
-    } else if (location === "discard") {
-      setModalCards(discardedPkmn);
-      setModalLocation("discard");
-    }
-    setModalOpen(true);
-  };
-
   const addToHandRemoveFromLocation = (cards) => {
     // look at the cards inside the deck and pick cards
     // Opens up a modal that shows the cards in the deck
@@ -387,16 +383,28 @@ const Play = ({
     setHand(copyHand);
   };
 
-  const retrieveCardFromDiscard = () => {
-    // look at cards in discard and put cards to hand
-    // Opens up a modal that shows the cards in the discard
-    // each card can be clicked to return to hand
+  // =========================== MODAL LOGIC ========================================
+
+  const [modalCards, setModalCards] = useState([]);
+  const [modalLocation, setModalLocation] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pickedModal, setPickedModal] = useState([]);
+
+  const modalClicked = (location) => {
+    if (location === "deck") {
+      setModalCards(localDeck.cards);
+      setModalLocation("deck");
+    } else if (location === "discard") {
+      setModalCards(discardedPkmn);
+      setModalLocation("discard");
+    }
+    setModalOpen(true);
   };
 
   const putDeckCardsInOrder = () => {
     // allow players to reorder the deck
   };
-  // ===================================================================
+  // ===============================================================================
 
   const shuffle = () => {
     let shuffledDeck = localDeck.cards;
@@ -470,6 +478,7 @@ const Play = ({
           index={indexSelected}
           setActive={addActivePkmn}
           setBench={addBenchPkmn}
+          setTrainer={playTrainer}
           setDiscard={discard}
           setSwitch={switchPkmn}
           setEnergy={attachEnergy}
@@ -509,6 +518,37 @@ const Play = ({
             ))}
         </div>
 
+        {/* PLAYER ACTIVE */}
+        <div className="active-pokemon1-placeholder">
+          {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
+          {activePkmn && (
+            <div>
+              {activePkmn.energies &&
+                activePkmn.energies.map((energy, energyIndex) => (
+                  <img
+                    className="attached-energy"
+                    style={{
+                      left: (energyIndex + 1) * 15,
+                      zIndex: (energyIndex + 1) * -5,
+                    }}
+                    width="100%"
+                    src={energy.imageUrl}
+                    onClick={() =>
+                      selectCard(energy, "energyActive", 0, energyIndex)
+                    }
+                  />
+                ))}
+              <img
+                width="100%"
+                style={{ zIndex: 50 }}
+                src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
+                alt=""
+                onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
+              />
+            </div>
+          )}
+        </div>
+
         {/* PLAYER BENCH */}
         <div className="bench1-placeholder">
           {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
@@ -544,6 +584,40 @@ const Play = ({
             ))}
         </div>
 
+        {/* PLAYER TRAINER */}
+        <div className="player-trainer-container">
+          <img
+            width="100%"
+            src={trainer && trainer.imageUrl}
+            alt=""
+            onClick={() => selectCard(trainer, "trainer", 0)}
+          />
+        </div>
+
+        {/* OPPONENT ACTIVE */}
+        <div className="active-pokemon2-placeholder">
+          {oppActive.energies &&
+            oppActive.energies.map((energy, energyIndex) => (
+              <img
+                className="attached-energy"
+                style={{
+                  left: (energyIndex + 1) * 15,
+                  zIndex: (energyIndex + 1) * -5,
+                }}
+                width="100%"
+                src={energy.imageUrl}
+                onClick={() => selectCard(energy, "opponent", 0, energyIndex)}
+              />
+            ))}
+          <img
+            src={oppLoaded ? oppActive.pkmn?.imageUrl : ""}
+            width="100%"
+            style={{ zIndex: 50 }}
+            alt=""
+            onClick={() => selectCard(activePkmn.pkmn, "opponent", 0)}
+          />
+        </div>
+
         {/* OPPONENT BENCH */}
         <div className="bench2-placeholder">
           {oppBench &&
@@ -577,60 +651,15 @@ const Play = ({
             ))}
         </div>
 
-        {/* PLAYER ACTIVE */}
-        <div className="active-pokemon1-placeholder">
-          {/* {itemDropped && <PlayCard card={draggedCard.card} />} */}
-          {activePkmn && (
-            <div>
-              {activePkmn.energies &&
-                activePkmn.energies.map((energy, energyIndex) => (
-                  <img
-                    className="attached-energy"
-                    style={{
-                      left: (energyIndex + 1) * 15,
-                      zIndex: (energyIndex + 1) * -5,
-                    }}
-                    width="100%"
-                    src={energy.imageUrl}
-                    onClick={() =>
-                      selectCard(energy, "energyActive", 0, energyIndex)
-                    }
-                  />
-                ))}
-              <img
-                width="100%"
-                style={{ zIndex: 50 }}
-                src={activePkmn.pkmn && activePkmn.pkmn.imageUrl}
-                alt=""
-                onClick={() => selectCard(activePkmn.pkmn, "activePkmn", 0)}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* OPPONENT ACTIVE */}
-        <div className="active-pokemon2-placeholder">
-          {oppActive.energies &&
-            oppActive.energies.map((energy, energyIndex) => (
-              <img
-                className="attached-energy"
-                style={{
-                  left: (energyIndex + 1) * 15,
-                  zIndex: (energyIndex + 1) * -5,
-                }}
-                width="100%"
-                src={energy.imageUrl}
-                onClick={() => selectCard(energy, "opponent", 0, energyIndex)}
-              />
-            ))}
+        <div className="opponent-trainer-container">
           <img
-            src={oppLoaded ? oppActive.pkmn?.imageUrl : ""}
             width="100%"
-            style={{ zIndex: 50 }}
+            src={oppTrainer && oppTrainer.imageUrl}
             alt=""
-            onClick={() => selectCard(activePkmn.pkmn, "opponent", 0)}
+            onClick={() => selectCard(trainer, "opponent", 0)}
           />
         </div>
+
         <div className="discard-pile-placeholder">
           {discardedPkmn[0] && (
             <img
