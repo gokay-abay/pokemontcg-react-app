@@ -215,7 +215,7 @@
   position: absolute;
   top: 40%;
   left: 45%;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   color: #dcdcdc;
   z-index: 100;
