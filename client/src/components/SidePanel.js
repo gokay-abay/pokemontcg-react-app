@@ -148,7 +148,7 @@ const SidePanel = ({
             ) : (
               <>
                 {cardTypes()}
-                {card.location !== "hand" && (
+                {card.location !== "hand" && !card && (
                   <button
                     class="btn btn-light"
                     onClick={() =>
@@ -163,19 +163,21 @@ const SidePanel = ({
                     Return to Hand
                   </button>
                 )}
-                <button
-                  class="btn btn-light"
-                  onClick={() =>
-                    returnToDeck(
-                      card.card,
-                      card.location,
-                      card.index,
-                      card.nestedIndex
-                    )
-                  }
-                >
-                  Return to Deck
-                </button>
+                {!card && (
+                  <button
+                    class="btn btn-light"
+                    onClick={() =>
+                      returnToDeck(
+                        card.card,
+                        card.location,
+                        card.index,
+                        card.nestedIndex
+                      )
+                    }
+                  >
+                    Return to Deck
+                  </button>
+                )}
               </>
             )}
           </div>
