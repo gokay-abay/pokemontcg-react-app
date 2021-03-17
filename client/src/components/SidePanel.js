@@ -1,5 +1,6 @@
-import React from "react";
-import { pokeCardBack } from "../constants/images";
+import { Group } from "@material-ui/icons"
+import React from "react"
+import { pokeCardBack } from "../constants/images"
 
 // what props this will take
 const SidePanel = ({
@@ -15,6 +16,7 @@ const SidePanel = ({
   isActive,
   returnToHand,
   returnToDeck,
+  openModal,
 }) => {
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
@@ -72,7 +74,7 @@ const SidePanel = ({
         Discard
       </button>
     </>
-  );
+  )
 
   const energy = (
     <>
@@ -88,16 +90,18 @@ const SidePanel = ({
         Discard
       </button>
     </>
-  );
+  )
 
   const trainer = (
     <>
-      <button
-        class="btn btn-light"
-        onClick={() => setTrainer(card.card, card.index)}
-      >
-        Play
-      </button>
+      {card.location === "hand" && (
+        <button
+          class="btn btn-light"
+          onClick={() => setTrainer(card.card, card.index)}
+        >
+          Play
+        </button>
+      )}
       <button
         class="btn btn-light"
         onClick={() =>
@@ -107,20 +111,20 @@ const SidePanel = ({
         Discard
       </button>
     </>
-  );
+  )
 
   const cardTypes = () => {
     switch (card.card?.supertype) {
       case "Pokémon":
-        return pokemon;
+        return pokemon
       case "Energy":
-        return energy;
+        return energy
       case "Trainer":
-        return trainer;
+        return trainer
       default:
-        break;
+        break
     }
-  };
+  }
 
   return (
     <div className="side-panel-container">
@@ -128,46 +132,57 @@ const SidePanel = ({
         <img
           width="100%"
           src={card.card?.imageUrl ? card.card.imageUrl : pokeCardBack}
-          alt={card.card?.name}
+          alt={card.card?.name || "deck"}
         />
       </div>
       {card.location !== "opponent" && (
         <>
           <div className="btn-group">
-            {cardTypes()}
-            {card.location !== "hand" && (
+            {card.location === "deck" ? (
               <button
-                class="btn btn-light"
-                onClick={() =>
-                  returnToHand(
-                    card.card,
-                    card.location,
-                    card.index,
-                    card.nestedIndex
-                  )
-                }
+                className="btn btn-light"
+                onClick={() => openModal("deck")}
               >
-                Return to Hand
+                Search Deck
               </button>
+            ) : (
+              <>
+                {cardTypes()}
+                {card.location !== "hand" && (
+                  <button
+                    class="btn btn-light"
+                    onClick={() =>
+                      returnToHand(
+                        card.card,
+                        card.location,
+                        card.index,
+                        card.nestedIndex
+                      )
+                    }
+                  >
+                    Return to Hand
+                  </button>
+                )}
+                <button
+                  class="btn btn-light"
+                  onClick={() =>
+                    returnToDeck(
+                      card.card,
+                      card.location,
+                      card.index,
+                      card.nestedIndex
+                    )
+                  }
+                >
+                  Return to Deck
+                </button>
+              </>
             )}
-            <button
-              class="btn btn-light"
-              onClick={() =>
-                returnToDeck(
-                  card.card,
-                  card.location,
-                  card.index,
-                  card.nestedIndex
-                )
-              }
-            >
-              Return to Deck
-            </button>
           </div>
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SidePanel;
+export default SidePanel

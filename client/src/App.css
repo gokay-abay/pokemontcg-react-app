@@ -123,7 +123,7 @@ img {
 .side-panel {
   /* position: absolute; */
   background-color: brown;
-  height: 85vh;
+  height: 80vh;
   width: 300px;
 }
 .side-panel-container {

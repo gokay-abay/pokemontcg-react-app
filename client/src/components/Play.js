@@ -19,6 +19,12 @@ import Coin from "./Coin"
 // const socket = io("http://localhost:4000/");
 const socket = io("https://gentle-brushlands-61970.herokuapp.com")
 
+const deckBack = {
+  card: {
+    imageUrl: pokeCardBack,
+  },
+}
+
 const Play = ({
   getAllDecks,
   decks,
@@ -573,11 +579,16 @@ const Play = ({
           isActive={activePkmn.pkmn}
           returnToHand={returnToHand}
           returnToDeck={returnToDeck}
+          openModal={modalClicked}
         />
         <div className="btn-group">
-          <button onClick={draw}>Draw</button>
-          <button onClick={shuffle}>Shuffle</button>
-          <button onClick={restart}>Restart</button>
+          <button className="btn btn-success" onClick={draw}>
+            Draw
+          </button>
+          <button className="btn btn-primary" onClick={shuffle}>
+            Shuffle
+          </button>
+          {/* <button onClick={restart}>Restart</button> */}
         </div>
       </div>
 
@@ -847,7 +858,8 @@ const Play = ({
           src={pokeCardBack}
           alt="pokecard"
           width="100px"
-          onClick={() => modalClicked("deck")}
+          onClick={() => selectCard(deckBack, "deck")}
+          // onClick={() => modalClicked("deck")}
         />
 
         {/* <div className="hand-div">
