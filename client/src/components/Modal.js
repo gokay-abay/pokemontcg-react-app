@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   root: {
-    width: 500,
+    width: 800,
     padding: 25,
     textAlign: "center",
   },
@@ -87,7 +87,8 @@ export default function TransitionsModal({
         <Fade in={open}>
           <Card className={classes.root}>
             <div className={classes.header}>
-              <Typography gutterBottom variant="h5" style={{ flexGrow: 1 }}>
+              <div style={{ width: "48px" }}></div>
+              <Typography gutterBottom variant="h4" style={{ flexGrow: 1 }}>
                 {location === "deck" ? "Deck" : "Discard Pile"}
               </Typography>
               <IconButton onClick={handleClose}>
