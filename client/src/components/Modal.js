@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import Slider from "react-slick";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import CloseIcon from "@material-ui/icons/Close";
-import { IconButton } from "@material-ui/core";
+import React, { useEffect, useState } from "react"
+import { makeStyles } from "@material-ui/core/styles"
+import Modal from "@material-ui/core/Modal"
+import Backdrop from "@material-ui/core/Backdrop"
+import Fade from "@material-ui/core/Fade"
+import Slider from "react-slick"
+import Card from "@material-ui/core/Card"
+import CardActionArea from "@material-ui/core/CardActionArea"
+import CardActions from "@material-ui/core/CardActions"
+import CardContent from "@material-ui/core/CardContent"
+import CardMedia from "@material-ui/core/CardMedia"
+import Button from "@material-ui/core/Button"
+import Typography from "@material-ui/core/Typography"
+import CloseIcon from "@material-ui/icons/Close"
+import { IconButton } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 25,
     // textAlign: "center",
   },
-}));
+}))
 
 export default function TransitionsModal({
   cards,
@@ -34,19 +34,19 @@ export default function TransitionsModal({
   addToHand,
   location,
 }) {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
-  const [selectedCards, setSelectedCards] = useState([]);
+  const classes = useStyles()
+  const [open, setOpen] = useState(false)
+  const [selectedCard, setSelectedCard] = useState("")
 
   useEffect(() => {
-    setOpen(clicked);
-  }, [clicked]);
+    setOpen(clicked)
+  }, [clicked])
 
   const handleClose = () => {
-    setOpen(false);
-    close(false);
-    setSelectedCards([]);
-  };
+    setOpen(false)
+    close(false)
+    setSelectedCard("")
+  }
 
   //   const slidesNo = cards
 
@@ -55,24 +55,24 @@ export default function TransitionsModal({
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 5,
-  };
+  }
 
-  const undo = () => {
-    let copySelected = selectedCards;
-    copySelected.pop();
-    setSelectedCards(copySelected);
-  };
+  // const undo = () => {
+  //   let copySelected = selectedCards;
+  //   copySelected.pop();
+  //   setSelectedCards(copySelected);
+  // };
 
   const add = () => {
-    addToHand(selectedCards);
-    setSelectedCards([]);
-    setOpen(false);
-    close(false);
-  };
+    addToHand(selectedCard)
+    setSelectedCard("")
+    setOpen(false)
+    close(false)
+  }
 
   const reset = () => {
-    setSelectedCards([]);
-  };
+    setSelectedCard("")
+  }
 
   //   const update = (index) => {
   //     let copy = copyCards;
@@ -100,12 +100,7 @@ export default function TransitionsModal({
             <Typography>
               {location === "deck" ? "Deck" : "Discard Pile"}
             </Typography>
-            <Typography>
-              Selected Cards:{" "}
-              {selectedCards.map((card, index) => (
-                <>{card.card.name}, </>
-              ))}
-            </Typography>
+            <Typography>Selected Card: {selectedCard.card?.name}</Typography>
             <Slider {...settings}>
               {cards.map((card, index) => (
                 <img
@@ -114,10 +109,7 @@ export default function TransitionsModal({
                   src={card.imageUrl}
                   alt=""
                   onClick={() => {
-                    setSelectedCards([
-                      ...selectedCards,
-                      { card: card, index: index },
-                    ]);
+                    setSelectedCard({ card: card, index: index })
                   }}
                 />
               ))}
@@ -133,5 +125,5 @@ export default function TransitionsModal({
         </Fade>
       </Modal>
     </div>
-  );
+  )
 }

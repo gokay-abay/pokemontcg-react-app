@@ -451,11 +451,10 @@ const Play = ({
 
     if (modalLocation === "deck") {
       let copyDeck = localDeck.cards
-      cards.forEach((card) => {
-        hand.push(card.card)
-        const removedCards = copyDeck.splice(card.index, 1)
-      })
-
+      // cards.forEach((card) => {
+      hand.push(cards.card)
+      const removedCards = copyDeck.splice(cards.index, 1)
+      // })
       setLocalDeck((prevState) => {
         return {
           ...prevState,
@@ -464,10 +463,10 @@ const Play = ({
       })
     } else if (modalLocation === "discard") {
       let copyDiscard = discardedPkmn
-      cards.forEach((card) => {
-        hand.push(card.card)
-        const removedCards = copyDiscard.splice(card.index, 1)
-      })
+      // cards.forEach((card) => {
+      hand.push(cards.card)
+      const removedCards = copyDiscard.splice(cards.index, 1)
+      // })
       setDiscardedPkmn(copyDiscard)
     }
     setHand(copyHand)
@@ -825,7 +824,7 @@ const Play = ({
             width="80px"
             src={oppTrainer && oppTrainer.imageUrl}
             alt=""
-            onClick={() => selectCard(trainer, "opponent", 0)}
+            onClick={() => selectCard(oppTrainer, "opponent", 0)}
           />
         </div>
 
