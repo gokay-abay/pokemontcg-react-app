@@ -14,6 +14,7 @@ import { pokeCardBack } from "../constants/images"
 import Modal from "./Modal"
 import Slider from "react-slick"
 import { set } from "mongoose"
+import Coin from "./Coin"
 
 // const socket = io("http://localhost:4000/");
 const socket = io("https://gentle-brushlands-61970.herokuapp.com")
@@ -836,6 +837,9 @@ const Play = ({
               }}
             />
           )}
+        </div>
+        <div className="coin-container">
+          <Coin />
         </div>
         <img
           id="card-back-img"

@@ -2,6 +2,9 @@
   padding-top: 1em;
 }
 
+img {
+  cursor: pointer;
+}
 /* ====================================================== 
                           NAVBAR
 ======================================================= */
@@ -318,6 +321,105 @@ PLACEHOLDER
 .slick-prev:before,
 .slick-next:before {
   color: blue !important;
+}
+
+/* ==============================================
+                      COIN 
+===============================================*/
+.coin-container {
+  /* border: 1px solid #dcdcdc; */
+  height: 20%;
+  width: 10%;
+  position: absolute;
+  top: 32%;
+  left: 85%;
+  justify-content: center;
+  align-items: center;
+  color: #dcdcdc;
+}
+
+#coin {
+  position: relative;
+  margin: 0 auto;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+}
+#coin div {
+  width: 100%;
+  height: 100%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  /* -webkit-box-shadow: inset 0 0 45px rgba(255, 255, 255, 0.3),
+    0 12px 20px -10px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: inset 0 0 45px rgba(255, 255, 255, 0.3),
+    0 12px 20px -10px rgba(0, 0, 0, 0.4); */
+  /* box-shadow: inset 0 0 45px rgba(255, 255, 255, 0.3),
+    0 12px 20px -10px rgba(0, 0, 0, 0.4); */
+}
+.side-a {
+  /* background-image: url("https://52f4e29a8321344e30ae-0f55c9129972ac85d6b1f4e703468e6b.ssl.cf2.rackcdn.com/products/pictures/1110551.jpg"); */
+  color: white;
+  text-align: center;
+}
+.side-b {
+  /* background-image: url("https://spakatak.com/tazos/usa/images/pokemonbattlingcoingame/back.jpg"); */
+  color: white;
+  text-align: center;
+}
+
+#coin {
+  transition: 3s ease-in;
+  transform-style: preserve-3d;
+}
+#coin div {
+  position: absolute;
+  backface-visibility: hidden;
+}
+.side-a {
+  z-index: 100;
+}
+.side-b {
+  transform: rotateY(-180deg);
+}
+
+#coin.heads {
+  /* -webkit-animation: flipHeads 1s ease-out forwards;
+  -moz-animation: flipHeads 1s ease-out forwards;
+  -o-animation: flipHeads 1s ease-out forwards; */
+  animation: flipHeads 0.5s ease-out forwards;
+}
+#coin.tails {
+  /* -webkit-animation: flipTails 1s ease-out forwards;
+  -moz-animation: flipTails 1s ease-out forwards;
+  -o-animation: flipTails 1s ease-out forwards; */
+  animation: flipTails 0.5s ease-out forwards;
+}
+
+@keyframes flipHeads {
+  from {
+    -webkit-transform: rotateY(0);
+    -moz-transform: rotateY(0);
+    transform: rotateY(0);
+  }
+  to {
+    -webkit-transform: rotateY(540deg);
+    -moz-transform: rotateY(540deg);
+    transform: rotateY(540deg);
+  }
+}
+@keyframes flipTails {
+  from {
+    -webkit-transform: rotateY(0);
+    -moz-transform: rotateY(0);
+    transform: rotateY(0);
+  }
+  to {
+    -webkit-transform: rotateY(720deg);
+    -moz-transform: rotateY(720deg);
+    transform: rotateY(720deg);
+  }
 }
 
 @media only screen and (max-width: 768px) {
