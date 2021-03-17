@@ -1,11 +1,15 @@
 import React, { useState } from "react"
 
-const Coin = () => {
+const Coin = React.memo(() => {
   const [result, setresult] = useState({ coin: "", tossed: false })
   //   const [tossed, setTossed] = useState(false)
+  // on click add a class name
 
   const coinToss = () => {
-    setresult({ coin: "", tossed: true })
+    // setresult({ coin: "", tossed: true })
+    // setresult(prevState => {
+    //     return {...prevState, }
+    //     )
     if (Math.random() < 0.5) {
       setresult({ coin: "heads", tossed: false })
       console.log("heads")
@@ -17,7 +21,7 @@ const Coin = () => {
   return (
     <div className="App">
       <div id="coin" className={result.coin} key={+new Date()}>
-        <div class="side-a" onClick={coinToss}>
+        <div class={result.tossed && "side-a"} onClick={coinToss}>
           <img
             src="https://52f4e29a8321344e30ae-0f55c9129972ac85d6b1f4e703468e6b.ssl.cf2.rackcdn.com/products/pictures/1110551.jpg"
             alt=""
@@ -34,6 +38,6 @@ const Coin = () => {
       </div>
     </div>
   )
-}
+})
 
 export default Coin
