@@ -62,10 +62,12 @@ export default function TransitionsModal({
   }
 
   const add = () => {
-    addToHand(selectedCard)
-    setSelectedCard("")
-    setOpen(false)
-    close(false)
+    if (selectedCard.card) {
+      addToHand(selectedCard)
+      setSelectedCard("")
+      setOpen(false)
+      close(false)
+    }
   }
 
   const reset = () => {

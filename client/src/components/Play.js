@@ -130,6 +130,12 @@ const Play = ({
   const [energy, setEnergy] = useState()
   const [evolutionCard, setEvolutionCard] = useState()
 
+  // MODAL STATE VARIABLES
+  const [modalCards, setModalCards] = useState([])
+  const [modalLocation, setModalLocation] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
+  const [pickedModal, setPickedModal] = useState([])
+
   // ============== EVENT EMITTERS =====================================//
   useEffect(() => {
     let mounted = true
@@ -455,6 +461,7 @@ const Play = ({
     // Opens up a modal that shows the cards in the deck
     // each card can be clicked to return to hand
     let copyHand = hand
+    console.log(cards)
 
     if (modalLocation === "deck") {
       let copyDeck = localDeck.cards
@@ -476,11 +483,6 @@ const Play = ({
   }
 
   // =========================== MODAL LOGIC ========================================
-
-  const [modalCards, setModalCards] = useState([])
-  const [modalLocation, setModalLocation] = useState("")
-  const [modalOpen, setModalOpen] = useState(false)
-  const [pickedModal, setPickedModal] = useState([])
 
   const modalClicked = (location) => {
     if (location === "deck") {
@@ -579,7 +581,7 @@ const Play = ({
           isActive={activePkmn.pkmn}
           returnToHand={returnToHand}
           returnToDeck={returnToDeck}
-          openModal={modalClicked}
+          openModal={() => modalClicked("deck")}
         />
         <div className="btn-group">
           <button className="btn btn-success" onClick={draw}>
@@ -858,8 +860,10 @@ const Play = ({
           src={pokeCardBack}
           alt="pokecard"
           width="100px"
-          onClick={() => selectCard(deckBack, "deck")}
-          // onClick={() => modalClicked("deck")}
+          onClick={() => {
+            selectCard(deckBack, "deck")
+            // modalClicked("deck")
+          }}
         />
 
         {/* <div className="hand-div">

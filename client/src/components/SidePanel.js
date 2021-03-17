@@ -148,7 +148,7 @@ const SidePanel = ({
             ) : (
               <>
                 {cardTypes()}
-                {card.location !== "hand" && !card && (
+                {card.location !== "hand" && card.card && (
                   <button
                     class="btn btn-light"
                     onClick={() =>
@@ -163,7 +163,7 @@ const SidePanel = ({
                     Return to Hand
                   </button>
                 )}
-                {!card && (
+                {card.card && (
                   <button
                     class="btn btn-light"
                     onClick={() =>
