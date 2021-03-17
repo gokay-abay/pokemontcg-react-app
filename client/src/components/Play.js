@@ -451,10 +451,8 @@ const Play = ({
 
     if (modalLocation === "deck") {
       let copyDeck = localDeck.cards
-      // cards.forEach((card) => {
       hand.push(cards.card)
       const removedCards = copyDeck.splice(cards.index, 1)
-      // })
       setLocalDeck((prevState) => {
         return {
           ...prevState,
@@ -463,10 +461,8 @@ const Play = ({
       })
     } else if (modalLocation === "discard") {
       let copyDiscard = discardedPkmn
-      // cards.forEach((card) => {
       hand.push(cards.card)
       const removedCards = copyDiscard.splice(cards.index, 1)
-      // })
       setDiscardedPkmn(copyDiscard)
     }
     setHand(copyHand)

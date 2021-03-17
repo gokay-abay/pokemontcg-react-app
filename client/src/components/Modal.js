@@ -12,7 +12,7 @@ import CardMedia from "@material-ui/core/CardMedia"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 import CloseIcon from "@material-ui/icons/Close"
-import { IconButton } from "@material-ui/core"
+import { CardHeader, IconButton } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -23,7 +23,13 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: 500,
     padding: 25,
-    // textAlign: "center",
+    textAlign: "center",
+  },
+  slider: {
+    margin: 20,
+  },
+  header: {
+    display: "flex",
   },
 }))
 
@@ -48,20 +54,12 @@ export default function TransitionsModal({
     setSelectedCard("")
   }
 
-  //   const slidesNo = cards
-
   const settings = {
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 5,
   }
-
-  // const undo = () => {
-  //   let copySelected = selectedCards;
-  //   copySelected.pop();
-  //   setSelectedCards(copySelected);
-  // };
 
   const add = () => {
     addToHand(selectedCard)
@@ -73,12 +71,6 @@ export default function TransitionsModal({
   const reset = () => {
     setSelectedCard("")
   }
-
-  //   const update = (index) => {
-  //     let copy = copyCards;
-  //     copy.splice(index, 1);
-  //     setCopyCards(copy);
-  //   };
 
   return (
     <div>
@@ -94,14 +86,16 @@ export default function TransitionsModal({
       >
         <Fade in={open}>
           <Card className={classes.root}>
-            <IconButton onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-            <Typography>
-              {location === "deck" ? "Deck" : "Discard Pile"}
-            </Typography>
-            <Typography>Selected Card: {selectedCard.card?.name}</Typography>
-            <Slider {...settings}>
+            <div className={classes.header}>
+              <Typography gutterBottom variant="h5" style={{ flexGrow: 1 }}>
+                {location === "deck" ? "Deck" : "Discard Pile"}
+              </Typography>
+              <IconButton onClick={handleClose}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+
+            <Slider {...settings} className={classes.slider}>
               {cards.map((card, index) => (
                 <img
                   key={index}
@@ -114,13 +108,19 @@ export default function TransitionsModal({
                 />
               ))}
             </Slider>
+            <Typography gutterBottom>
+              <span style={{ fontWeight: "bold" }}>
+                {" "}
+                {selectedCard.card?.name}
+              </span>
+            </Typography>
             <Button variant="contained" color="primary" onClick={add}>
               Add to Hand
             </Button>
             {/* <Button onClick={() => undo()}>Undo</Button> */}
-            <Button variant="contained" onClick={() => reset()}>
+            {/* <Button variant="contained" onClick={() => reset()}>
               Reset
-            </Button>
+            </Button> */}
           </Card>
         </Fade>
       </Modal>
