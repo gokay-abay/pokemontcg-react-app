@@ -388,13 +388,13 @@ PLACEHOLDER
   /* -webkit-animation: flipHeads 1s ease-out forwards;
   -moz-animation: flipHeads 1s ease-out forwards;
   -o-animation: flipHeads 1s ease-out forwards; */
-  animation: flipHeads 0.5s ease-out forwards;
+  animation: flipHeads 0.9s ease-out forwards;
 }
 #coin.tails {
   /* -webkit-animation: flipTails 1s ease-out forwards;
   -moz-animation: flipTails 1s ease-out forwards;
   -o-animation: flipTails 1s ease-out forwards; */
-  animation: flipTails 0.5s ease-out forwards;
+  animation: flipTails 1s ease-out forwards;
 }
 
 @keyframes flipHeads {
@@ -404,9 +404,9 @@ PLACEHOLDER
     transform: rotateY(0);
   }
   to {
-    -webkit-transform: rotateY(540deg);
-    -moz-transform: rotateY(540deg);
-    transform: rotateY(540deg);
+    /* -webkit-transform: rotateY(540deg);
+    -moz-transform: rotateY(540deg); */
+    transform: rotateY(1080deg);
   }
 }
 @keyframes flipTails {
@@ -418,9 +418,13 @@ PLACEHOLDER
   to {
     -webkit-transform: rotateY(720deg);
     -moz-transform: rotateY(720deg);
-    transform: rotateY(720deg);
+    transform: rotateY(1260deg);
   }
 }
+
+/* ==============================================
+                    RESPONSIVENESS 
+===============================================*/
 
 @media only screen and (max-width: 768px) {
   .list {
