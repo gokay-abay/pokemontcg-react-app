@@ -17,26 +17,43 @@ const SidePanel = ({
   returnToHand,
   returnToDeck,
   openModal,
+  cardReset,
 }) => {
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
 
   const pokemon = (
     <>
-      {card.card.subtype === "Basic" ? (
+      {card?.card.subtype === "Basic" ? (
         <>
           {!isActive && card.location === "hand" && (
             <button
               class="btn btn-light"
-              onClick={() => setActive(card.card, card.location, card.index)}
+              onClick={() => {
+                setActive(card.card, card.location, card.index)
+                cardReset({
+                  card: "",
+                  location: "",
+                  index: "",
+                  nestedIndex: "",
+                })
+              }}
             >
               Active Pkmn
             </button>
           )}
-          {card.location === "hand" && (
+          {card?.location === "hand" && (
             <button
               class="btn btn-light"
-              onClick={() => setBench(card.card, card.location, card.index)}
+              onClick={() => {
+                setBench(card.card, card.location, card.index)
+                cardReset({
+                  card: "",
+                  location: "",
+                  index: "",
+                  nestedIndex: "",
+                })
+              }}
             >
               Bench
             </button>
@@ -44,35 +61,40 @@ const SidePanel = ({
         </>
       ) : (
         <>
-          {card.location === "hand" && (
+          {card?.location === "hand" && (
             <button
               class="btn btn-light"
-              onClick={() =>
+              onClick={() => {
                 setEvolve(
                   card.card,
                   card.location,
                   card.index,
                   card.nestedIndex
                 )
-              }
+              }}
             >
               Evolve
             </button>
           )}
         </>
       )}
-      {card.location ===
-        (card.location === "benchPkmn" ? "benchPkmn" : "evolutionBench") && (
-        <button class="btn btn-light" onClick={() => setSwitch(index)}>
+      {card?.location ===
+        (card?.location === "benchPkmn" ? "benchPkmn" : "evolutionBench") && (
+        <button
+          class="btn btn-light"
+          onClick={() => {
+            setSwitch(index)
+            cardReset({
+              card: "",
+              location: "",
+              index: "",
+              nestedIndex: "",
+            })
+          }}
+        >
           Switch with Active
         </button>
       )}
-      <button
-        class="btn btn-light"
-        onClick={() => setDiscard(card.card, card.location, card.index)}
-      >
-        Discard
-      </button>
     </>
   )
 
@@ -81,40 +103,32 @@ const SidePanel = ({
       <button class="btn btn-light" onClick={() => setEnergy(card.card, index)}>
         Attach to Pkmn
       </button>
-      <button
-        class="btn btn-light"
-        onClick={() =>
-          setDiscard(card.card, card.location, card.index, card.nestedIndex)
-        }
-      >
-        Discard
-      </button>
     </>
   )
 
   const trainer = (
     <>
-      {card.location === "hand" && (
+      {card?.location === "hand" && (
         <button
           class="btn btn-light"
-          onClick={() => setTrainer(card.card, card.index)}
+          onClick={() => {
+            setTrainer(card.card, card.index)
+            cardReset({
+              card: "",
+              location: "",
+              index: "",
+              nestedIndex: "",
+            })
+          }}
         >
           Play
         </button>
       )}
-      <button
-        class="btn btn-light"
-        onClick={() =>
-          setDiscard(card.card, card.location, card.index, card.nestedIndex)
-        }
-      >
-        Discard
-      </button>
     </>
   )
 
   const cardTypes = () => {
-    switch (card.card?.supertype) {
+    switch (card?.card.supertype) {
       case "Pokémon":
         return pokemon
       case "Energy":
@@ -131,14 +145,14 @@ const SidePanel = ({
       <div className="pokecard-back">
         <img
           width="100%"
-          src={card.card?.imageUrl ? card.card.imageUrl : pokeCardBack}
-          alt={card.card?.name || "deck"}
+          src={card?.card.imageUrl ? card.card.imageUrl : pokeCardBack}
+          alt={card?.card?.name || "deck"}
         />
       </div>
-      {card.location !== "opponent" && (
+      {card?.location !== "opponent" && (
         <>
           <div className="btn-group">
-            {card.location === "deck" ? (
+            {card?.location === "deck" ? (
               <button
                 className="btn btn-light"
                 onClick={() => openModal("deck")}
@@ -148,35 +162,70 @@ const SidePanel = ({
             ) : (
               <>
                 {cardTypes()}
-                {card.location !== "hand" && card.card && (
+                {card?.card && (
                   <button
                     class="btn btn-light"
-                    onClick={() =>
+                    onClick={() => {
+                      setDiscard(
+                        card.card,
+                        card.location,
+                        card.index,
+                        card.nestedIndex
+                      )
+                      cardReset({
+                        card: "",
+                        location: "",
+                        index: "",
+                        nestedIndex: "",
+                      })
+                    }}
+                  >
+                    Discard
+                  </button>
+                )}
+                {card?.location !== "hand" && card?.card && (
+                  <button
+                    class="btn btn-light"
+                    onClick={() => {
                       returnToHand(
                         card.card,
                         card.location,
                         card.index,
                         card.nestedIndex
                       )
-                    }
+                      cardReset({
+                        card: "",
+                        location: "",
+                        index: "",
+                        nestedIndex: "",
+                      })
+                    }}
                   >
                     Return to Hand
                   </button>
                 )}
-                {card.card && (
-                  <button
-                    class="btn btn-light"
-                    onClick={() =>
-                      returnToDeck(
-                        card.card,
-                        card.location,
-                        card.index,
-                        card.nestedIndex
-                      )
-                    }
-                  >
-                    Return to Deck
-                  </button>
+                {card?.card && (
+                  <>
+                    <button
+                      class="btn btn-light"
+                      onClick={() => {
+                        returnToDeck(
+                          card.card,
+                          card.location,
+                          card.index,
+                          card.nestedIndex
+                        )
+                        cardReset({
+                          card: "",
+                          location: "",
+                          index: "",
+                          nestedIndex: "",
+                        })
+                      }}
+                    >
+                      Return to Deck
+                    </button>
+                  </>
                 )}
               </>
             )}

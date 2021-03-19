@@ -234,6 +234,12 @@ const Play = ({
       }
       removeCardfromHand(evolutionCard.index)
       setEvolutionCard()
+      setSelectedCard({
+        card: "",
+        location: "",
+        index: "",
+        nestedIndex: "",
+      })
     }
   }
 
@@ -581,6 +587,7 @@ const Play = ({
           returnToHand={returnToHand}
           returnToDeck={returnToDeck}
           openModal={() => modalClicked("deck")}
+          cardReset={() => setSelectedCard()}
         />
         <div className="btn-group">
           <button className="btn btn-success" onClick={draw}>
@@ -844,7 +851,7 @@ const Play = ({
               src={discardedPkmn[0].imageUrl}
               alt=""
               onClick={() => {
-                selectCard(discardedPkmn[0], "discardedPkmn", "discardPile")
+                selectCard("", "discardedPkmn", "discardPile")
                 modalClicked("discard")
               }}
             />
