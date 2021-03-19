@@ -90,9 +90,17 @@ export default function TransitionsModal({
           <Card className={classes.root}>
             <div className={classes.header}>
               <div style={{ width: "48px" }}></div>
-              <Typography gutterBottom variant="h4" style={{ flexGrow: 1 }}>
-                {location === "deck" ? "Deck" : "Discard Pile"}
-              </Typography>
+              <div style={{ flexDirection: "column", flexGrow: 1 }}>
+                <Typography gutterBottom variant="h4">
+                  {location === "deck" ? "Deck" : "Discard Pile"}
+                </Typography>
+                {location === "deck" && (
+                  <Typography>
+                    Remaining cards:{" "}
+                    <span style={{ fontWeight: "bold" }}>{cards.length}</span>
+                  </Typography>
+                )}
+              </div>
               <IconButton onClick={handleClose}>
                 <CloseIcon />
               </IconButton>
