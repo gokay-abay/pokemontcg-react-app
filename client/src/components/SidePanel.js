@@ -28,7 +28,7 @@ const SidePanel = ({
         <>
           {!isActive && card.location === "hand" && (
             <button
-              class="btn btn-light"
+              className="btn btn-light"
               onClick={() => {
                 setActive(card.card, card.location, card.index)
                 cardReset({
@@ -44,7 +44,7 @@ const SidePanel = ({
           )}
           {card?.location === "hand" && (
             <button
-              class="btn btn-light"
+              className="btn btn-light"
               onClick={() => {
                 setBench(card.card, card.location, card.index)
                 cardReset({
@@ -63,7 +63,7 @@ const SidePanel = ({
         <>
           {card?.location === "hand" && (
             <button
-              class="btn btn-light"
+              className="btn btn-light"
               onClick={() => {
                 setEvolve(
                   card.card,
@@ -81,7 +81,7 @@ const SidePanel = ({
       {card?.location ===
         (card?.location === "benchPkmn" ? "benchPkmn" : "evolutionBench") && (
         <button
-          class="btn btn-light"
+          className="btn btn-light"
           onClick={() => {
             setSwitch(index)
             cardReset({
@@ -100,7 +100,10 @@ const SidePanel = ({
 
   const energy = (
     <>
-      <button class="btn btn-light" onClick={() => setEnergy(card.card, index)}>
+      <button
+        className="btn btn-light"
+        onClick={() => setEnergy(card.card, index)}
+      >
         Attach to Pkmn
       </button>
     </>
@@ -110,7 +113,7 @@ const SidePanel = ({
     <>
       {card?.location === "hand" && (
         <button
-          class="btn btn-light"
+          className="btn btn-light"
           onClick={() => {
             setTrainer(card.card, card.index)
             cardReset({
@@ -164,7 +167,7 @@ const SidePanel = ({
                 {cardTypes()}
                 {card?.card && (
                   <button
-                    class="btn btn-light"
+                    className="btn btn-light"
                     onClick={() => {
                       setDiscard(
                         card.card,
@@ -185,7 +188,7 @@ const SidePanel = ({
                 )}
                 {card?.location !== "hand" && card?.card && (
                   <button
-                    class="btn btn-light"
+                    className="btn btn-light"
                     onClick={() => {
                       returnToHand(
                         card.card,
@@ -207,7 +210,7 @@ const SidePanel = ({
                 {card?.card && (
                   <>
                     <button
-                      class="btn btn-light"
+                      className="btn btn-light"
                       onClick={() => {
                         returnToDeck(
                           card.card,
