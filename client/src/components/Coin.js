@@ -6,10 +6,8 @@ const Coin = React.memo(() => {
   const coinToss = () => {
     if (Math.random() < 0.5) {
       setresult({ coin: "heads", tossed: false })
-      console.log("heads")
     } else {
       setresult({ coin: "tails", tossed: false })
-      console.log("tails")
     }
   }
 
