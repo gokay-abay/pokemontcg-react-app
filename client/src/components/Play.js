@@ -134,7 +134,6 @@ const Play = ({
   const [modalCards, setModalCards] = useState([])
   const [modalLocation, setModalLocation] = useState("")
   const [modalOpen, setModalOpen] = useState(false)
-  const [pickedModal, setPickedModal] = useState([])
 
   // ============== EVENT EMITTERS =====================================//
   useEffect(() => {
