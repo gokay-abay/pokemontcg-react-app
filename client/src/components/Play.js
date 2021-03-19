@@ -289,9 +289,11 @@ const Play = ({
   }
 
   const playTrainer = (card, index) => {
-    card = removeCardfromHand(index)
-    setTrainer(...card)
-    socket.emit("trainer", trainer)
+    if (Object.keys(trainer).length === 0) {
+      card = removeCardfromHand(index)
+      setTrainer(...card)
+      socket.emit("trainer", trainer)
+    }
   }
 
   const evolvePkmn = (card, location, index, nestedIndex) => {
@@ -584,6 +586,7 @@ const Play = ({
           setSwitch={switchPkmn}
           setEnergy={attachEnergy}
           isActive={activePkmn.pkmn}
+          isTrainerPlayed={trainer}
           returnToHand={returnToHand}
           returnToDeck={returnToDeck}
           openModal={() => modalClicked("deck")}

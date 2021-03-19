@@ -14,6 +14,7 @@ const SidePanel = ({
   setDiscard,
   setEnergy,
   isActive,
+  isTrainerPlayed,
   returnToHand,
   returnToDeck,
   openModal,
@@ -111,7 +112,7 @@ const SidePanel = ({
 
   const trainer = (
     <>
-      {card?.location === "hand" && (
+      {card?.location === "hand" && Object.keys(isTrainerPlayed).length === 0 && (
         <button
           className="btn btn-light"
           onClick={() => {
