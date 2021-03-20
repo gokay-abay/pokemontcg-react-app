@@ -109,6 +109,11 @@ const Play = ({
     return () => clearTimeout(timer)
   }, [deck])
 
+  // Scroll to bottom of the page
+  useEffect(() => {
+    window.scrollTo(0, document.body.scrollHeight)
+  }, [])
+
   // ====================== SIDE PANEL LOGIC ===========================
 
   const [selectedCard, setSelectedCard] = useState({
@@ -591,16 +596,8 @@ const Play = ({
           returnToDeck={returnToDeck}
           openModal={() => modalClicked("deck")}
           cardReset={() => setSelectedCard()}
+          shuffle={() => shuffle()}
         />
-        <div className="btn-group">
-          <button className="btn btn-success" onClick={draw}>
-            Draw
-          </button>
-          <button className="btn btn-primary" onClick={shuffle}>
-            Shuffle
-          </button>
-          {/* <button onClick={restart}>Restart</button> */}
-        </div>
       </div>
 
       <div className="playmat">
@@ -860,21 +857,31 @@ const Play = ({
             />
           )}
         </div>
+        <div id="card-back-img">
+          <div className="btn-group">
+            <button className="btn btn-success" onClick={draw}>
+              Draw
+            </button>
+            {/* <button className="btn btn-primary" onClick={shuffle}>
+              Shuffle
+            </button> */}
+            {/* <button onClick={restart}>Restart</button> */}
+          </div>
+          <img
+            draggable="false"
+            src={pokeCardBack}
+            alt="pokecard"
+            width="100px"
+            onClick={() => {
+              selectCard(deckBack, "deck")
+              // modalClicked("deck")
+            }}
+          />
+        </div>
+
         <div className="coin-container">
           <Coin />
         </div>
-        <img
-          id="card-back-img"
-          draggable="false"
-          src={pokeCardBack}
-          alt="pokecard"
-          width="100px"
-          onClick={() => {
-            selectCard(deckBack, "deck")
-            // modalClicked("deck")
-          }}
-        />
-
         {/* <div className="hand-div">
         <ul className="list" id="hand-ul"> */}
         {/* {hand.map((card, index) => (

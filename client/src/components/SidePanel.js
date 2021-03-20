@@ -19,6 +19,7 @@ const SidePanel = ({
   returnToDeck,
   openModal,
   cardReset,
+  shuffle,
 }) => {
   // function that checks types
   // 1. if active pokemon place it to active pokemon div
@@ -157,12 +158,17 @@ const SidePanel = ({
         <>
           <div className="btn-group">
             {card?.location === "deck" ? (
-              <button
-                className="btn btn-light"
-                onClick={() => openModal("deck")}
-              >
-                Search Deck
-              </button>
+              <>
+                <button
+                  className="btn btn-light"
+                  onClick={() => openModal("deck")}
+                >
+                  Search Deck
+                </button>
+                <button className="btn btn-light" onClick={shuffle}>
+                  Shuffle
+                </button>
+              </>
             ) : (
               <>
                 {cardTypes()}
