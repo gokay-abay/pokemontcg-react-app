@@ -283,6 +283,39 @@ img {
   position: absolute;
 }
 
+.damage-counter {
+  position: absolute;
+  height: 100px;
+  width: 50px;
+  top: 2%;
+  left: 90%;
+}
+
+#poison-token {
+  top: 0%;
+}
+#dmg-50 {
+  top: 46%;
+  left: 12%;
+}
+
+#dmg-10 {
+  top: 80%;
+}
+
+#asleep-token {
+  left: 100%;
+  top: 10%;
+}
+#confused-token {
+  left: 100%;
+  top: 40%;
+}
+#paralyzed-token {
+  left: 100%;
+  top: 80%;
+}
+
 /* ================== 
 PLACEHOLDER
 =================== */
@@ -333,7 +366,7 @@ PLACEHOLDER
   width: 10%;
   position: absolute;
   top: 32%;
-  left: 85%;
+  left: 89%;
   justify-content: center;
   align-items: center;
   color: #dcdcdc;

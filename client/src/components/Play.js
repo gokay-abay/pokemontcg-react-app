@@ -13,8 +13,13 @@ import SidePanel from "./SidePanel"
 import { pokeCardBack } from "../constants/images"
 import Modal from "./Modal"
 import Slider from "react-slick"
-import { set } from "mongoose"
 import Coin from "./Coin"
+import damage_counter from "../constants/dmg_counter.png"
+import poison from "../constants/poison.png"
+import dmg50 from "../constants/dmg_50.png"
+import confused from "../constants/confused.png"
+import asleep from "../constants/asleep.png"
+import paralyzed from "../constants/paralysis.png"
 
 // const socket = io("http://localhost:4000/");
 const socket = io("https://gentle-brushlands-61970.herokuapp.com")
@@ -610,6 +615,7 @@ const Play = ({
             addToHandRemoveFromLocation(cards)
           }}
         />
+
         <div className="hand-placeholder">
           {hand &&
             hand.map((card, index) => (
@@ -882,6 +888,67 @@ const Play = ({
         <div className="coin-container">
           <Coin />
         </div>
+        <div className="damage-counter">
+          <Draggable>
+            <img
+              id="poison-token"
+              draggable="false"
+              src={poison}
+              alt=""
+              style={{ width: 50, zIndex: 600, position: "absolute" }}
+            />
+          </Draggable>
+          <Draggable>
+            <img
+              id="asleep-token"
+              draggable="false"
+              src={asleep}
+              alt=""
+              style={{ width: 40, zIndex: 600, position: "absolute" }}
+            />
+          </Draggable>
+          <Draggable>
+            <img
+              id="confused-token"
+              draggable="false"
+              src={confused}
+              alt=""
+              style={{ width: 40, zIndex: 600, position: "absolute" }}
+            />
+          </Draggable>
+          <Draggable>
+            <img
+              id="paralyzed-token"
+              draggable="false"
+              src={paralyzed}
+              alt=""
+              style={{ width: 40, zIndex: 600, position: "absolute" }}
+            />
+          </Draggable>
+          {Array(50).fill(
+            <Draggable>
+              <img
+                id="dmg-10"
+                src={damage_counter}
+                alt=""
+                draggable="false"
+                style={{ width: 50, zIndex: 500, position: "absolute" }}
+              />
+            </Draggable>
+          )}
+          {Array(20).fill(
+            <Draggable>
+              <img
+                id="dmg-50"
+                src={dmg50}
+                alt=""
+                draggable="false"
+                style={{ width: 40, zIndex: 500, position: "absolute" }}
+              />
+            </Draggable>
+          )}
+        </div>
+
         {/* <div className="hand-div">
         <ul className="list" id="hand-ul"> */}
         {/* {hand.map((card, index) => (
