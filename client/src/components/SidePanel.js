@@ -102,12 +102,14 @@ const SidePanel = ({
 
   const energy = (
     <>
-      <button
-        className="btn btn-light"
-        onClick={() => setEnergy(card.card, index)}
-      >
-        Attach to Pkmn
-      </button>
+      {card?.location === "hand" && (
+        <button
+          className="btn btn-light"
+          onClick={() => setEnergy(card.card, index)}
+        >
+          Attach to Pkmn
+        </button>
+      )}
     </>
   )
 
@@ -151,7 +153,7 @@ const SidePanel = ({
         <img
           width="100%"
           src={card?.card.imageUrl ? card.card.imageUrl : pokeCardBack}
-          alt={card?.card?.name || "deck"}
+          alt={card?.card.name || "deck"}
         />
       </div>
       {card?.location !== "opponent" && (
